@@ -2,10 +2,38 @@
     "project.name" : "物联网智能农业系统",
     "project.creatTime" : "20240303", 
     "project.functions" : {
-        
+        "f1" : {
+            "brief" : "提供网页后台",
+            "file" : "data/pages/",
+            "how" : "访问IP即可"
+        },
+        "f2" : {
+            "brief" : "控制LED亮度",
+            "file" : "gpio.ino",
+            "how" : "在网页后台调"
+        }
     },
     "project.requirements" : {
-        
+        "r1" : {
+            "name" : "ESPAsyncWebServer.h",
+            "version" : "none"
+        },
+        "r2" : {
+            "name" : "ArduinoJson.h",
+            "version" : "none"
+        },
+        "r3" : {
+            "name" : "LittleFS.h",
+            "version" : "none"
+        },
+        "r4" : {
+            "name" : "WiFi.h",
+            "version" : "none"
+        },
+        "r5" : {
+            "name" : "DNSServer.h",
+            "version" : "none"
+        }
     },
     "project.modify" : {
         
