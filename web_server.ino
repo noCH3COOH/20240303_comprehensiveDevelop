@@ -44,9 +44,17 @@ void web_server()
 {
     Serial.println("初始化WEB服务器");
     
-    server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");    // 响应网站根目录的GET请求,返回文件index.html
+    // 响应网站根目录的GET请求,返回文件index.html
+    server.serveStatic("/", LittleFS, "/pages/").setDefaultFile("index.html"); 
+    server.serveStatic("/icons/", LittleFS, "/icons/");
     
-    server.on("/setwifi", HTTP_POST, get_WIFI_set_CALLback);    // 响应设置WIFI按钮的请求
-    server.on("/GPIO2", HTTP_GET, GPIO_button);    // 响应改变引脚按钮的请求
+    // POST请求
+    server.on("/setwifi", HTTP_POST, get_WIFI_set_CALLback);
+    server.on("/setLED", HTTP_POST, LED_write);
+
+    // GET请求
+    server.on("/bomb", HTTP_GET, LED_read);
+
     server.begin();    // 初始化
+    Serial.println("WEB服务器初始化完成");
 }
