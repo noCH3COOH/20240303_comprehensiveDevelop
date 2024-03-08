@@ -36,7 +36,10 @@ function get_request(ElementId , path)
 
 setInterval(function() {
     get_request('bomb', '/bomb');
-}, 2000); // 每隔5秒更新一次
+    get_request('wifi', '/wifi');
+    get_request('ip', '/ip');
+    get_request('APip', '/APip');
+}, 2000);
 
 /**
  * @brief:	向path发送POST请求，并通过后台send()方法发送
