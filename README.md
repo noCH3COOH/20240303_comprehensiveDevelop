@@ -14,11 +14,14 @@
 ### 项目结构
 ``` shell
 ----20240303_comprehensiveDevelop
+    |----.gitignore   (12.000B)
     |----.vscode
-    |    |----arduino.json   (351.000B)
-    |    |----settings.json   (44.000B)
-    |----20240303_comprehensiveDevelop.ino   (406.000B)
+    |    |----arduino.json   (422.000B)
+    |    |----c_cpp_properties.json   (49.544KB)
+    |    |----settings.json   (218.000B)
+    |----20240303_comprehensiveDevelop.ino   (375.000B)
     |----data
+    |    |----config.json   (71.000B)
     |    |----icons
     |    |    |----bomb.png   (5.313KB)
     |    |    |----bright.png   (4.852KB)
@@ -32,23 +35,22 @@
     |    |    |----WiFi.png   (3.766KB)
     |    |----pages
     |    |    |----about.html   (1.101KB)
-    |    |    |----function.js   (2.038KB)
+    |    |    |----function.js   (2.111KB)
     |    |    |----index.html   (679.000B)
-    |    |    |----para.html   (1.809KB)
+    |    |    |----para.html   (1.906KB)
     |    |    |----setting.html   (1.260KB)
     |    |    |----style.css   (790.000B)
-    |    |----WIFIConfig.conf   (71.000B)
-    |----file_system.ino   (2.058KB)
-    |----global.h   (172.000B)
-    |----gpio.ino   (1.531KB)
+    |----file_system.ino   (2.880KB)
+    |----global.h   (814.000B)
+    |----gpio.ino   (1.972KB)
     |----info.json   (1012.000B)
     |----LICENSE.md   (11.092KB)
-    |----net_connect.ino   (1.936KB)
+    |----net_connect.ino   (2.994KB)
     |----README.md   (0.000B)
     |----requirements.txt   (0.000B)
-    |----web_server.ino   (2.286KB)
+    |----web_server.ino   (1.604KB)
 ```
-包含以下类型的文件：['.ino', '.h', '.json', '.md', '.txt', '.conf', '.png', '.html', '.js', '.css']
+包含以下类型的文件：['无后缀', '.ino', '.h', '.json', '.md', '.txt', '.png', '.html', '.js', '.css']
 
 ***
 ## 功能列表
