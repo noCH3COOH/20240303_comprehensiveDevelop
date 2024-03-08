@@ -1,64 +1,77 @@
 #include "global.h"
 
-#define LED_PIN 1 // 定义LED引脚
+int onBoard_LED_duty;
+bool onBoard_LED_up;
 
 /**
  * @brief 初始化GPIO
 */
 void GPIO_init()
 {
-    pinMode(LED_PIN, OUTPUT); // 引脚2设置为输出模式
-    digitalWrite(LED_PIN, 0); // 引脚2输出低电平
+    ledcSetup(WORK_LED_CHANNEL, 5000, 10);
+    ledcAttachPin(LED_PIN, WORK_LED_CHANNEL);
+
+    ledcSetup(BRIGHTNESS_CTRL_LED_CHANNEL, 5000, 10);
+    ledcAttachPin(LED1_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED2_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED3_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED4_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED5_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED6_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED7_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+    ledcAttachPin(LED8_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
+
+    onBoard_LED_duty = 0;
+    onBoard_LED_up = true;
 }  
 
-///**
-// * @brief 设置GPIO
-// * @param request 请求
-//*/  
-//void GPIO_button(AsyncWebServerRequest *request)
-//{  
-//    int pin_state = !digitalRead(1);
-//    String state;
-//    digitalWrite(1, pin_state); // 每次按下循环地改变引脚状态
-//    if (pin_state)
-//    {
-//      state = "开";
-//    }
-//    else
-//    {
-//      state = "关";
-//    }
-//    request->send(200, "text/plain", state); // 把状态发送回页面
-//    Serial.print("引脚状态改变为:");
-//    Serial.println(pin_state);
-//}
+/**
+ * @brief 测试LED
+*/
+void LED_root()
+{
+    if(onBoard_LED_up)
+        onBoard_LED_duty += 2;
+    else
+        onBoard_LED_duty -= 2;
+    
+    ledcWrite(WORK_LED_CHANNEL, onBoard_LED_duty);
+
+    if(onBoard_LED_duty >= 1023 || onBoard_LED_duty <= 0)
+        onBoard_LED_up = !onBoard_LED_up;   
+
+    delay(5);     
+}
 
 /**
  * @brief 读取 LED PWM数值
 */
-void LED_read(AsyncWebServerRequest *request)
+void getCallback_readLED(AsyncWebServerRequest *request)
 {
-    int pwm = analogRead(LED_PIN);
-    pwm = (int)(pwm / 10.23);
-    request->send(200, "text/plain", String(pwm) + "%");
-    String print_str = "LED PWM数值: " + String(pwm) + "%";
-    Serial.println(print_str);
+    int LED_duty = (ledcRead(BRIGHTNESS_CTRL_LED_CHANNEL) / 10.23);
+    request->send(200, "text/plain", String(LED_duty) + '%');
+    
+    //String print_str = "LED PWM数值: " + String(LED_duty);
+    //Serial.println(print_str);
 }
 
 /**
  * @brief 设置 LED PWM数值
  * @param request 请求
 */
-void LED_write(AsyncWebServerRequest *request)
+void postCallback_setLED(AsyncWebServerRequest *request)
 {
     String pwm = request->arg("LED_pwm");
-    int pwm_value = pwm.toInt();
-    pwm_value = (int)(pwm_value * 2.55);
+    int LED_duty = (pwm.toInt() * 10.23);
 
-    analogWrite(LED_PIN, pwm_value);
+    for(int i=0; i<8; i++)
+    {
+        ledcWrite(BRIGHTNESS_CTRL_LED_CHANNEL, LED_duty);
+        delay(15);
+    }
     delay(500);
 
-    String print_str = "设置LED PWM数值为: " + pwm + "%" + String(pwm_value);
+    String print_str = "设置LED PWM数值为: " + pwm + "% (" + String(LED_duty) + ')';
     Serial.println(print_str);
     request->send(200, "text/plain", "OK");
 }

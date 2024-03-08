@@ -9,7 +9,7 @@ DNSServer dnsserver;
  */
 void connect_WIFI(String ssid, String password)
 {
-    WiFi.begin(ssid.c_str(), password.c_str()); // 连接WIFI
+    WiFi.begin(ssid.c_str(), password.c_str());    // 连接WIFI
     Serial.print("连接WIFI");
     
     // 循环，10秒后连接不上跳出循环
@@ -27,9 +27,12 @@ void connect_WIFI(String ssid, String password)
         }
     }
     
-    Serial.println();
     IPAddress local_IP = WiFi.localIP();
-    Serial.print("WIFI连接成功，本地IP地址:"); // 连接成功提示
+    
+    Serial.println();
+    Serial.print("WIFI连接成功:");    // 连接成功提示
+    Serial.println(ssid.c_str());
+    Serial.print("本地IP地址:");
     Serial.println(local_IP);
 }
 
@@ -38,24 +41,34 @@ void connect_WIFI(String ssid, String password)
 */
 void connect_NET()
 {
-    const byte DNS_PORT = 53;                         // DNS端口
-    const String url = "ESPAP.com";                   // 域名
-    const char *APSsid = "esp32_AP";                  // AP SSID
-    const char *APPassword = "12345678";              // AP wifi密码
-    IPAddress APIp(10, 0, 10, 1);                     // AP IP
-    IPAddress APGateway(10, 0, 10, 1);                // AP网关
-    IPAddress APSubnetMask(255, 255, 255, 0);         // AP子网掩码
+    IPAddress AP_ip(10, 0, 10, 1);    // AP IP
+    IPAddress AP_gateway(10, 0, 10, 1);    // AP网关
+    IPAddress AP_subnetMask(255, 255, 255, 0);    // AP子网掩码
+    const byte DNS_port = 53;    // DNS端口
+    const char *AP_ssid = global_config.AP_ssid.c_str();    // AP SSID
+    const char *AP_password = global_config.AP_password.c_str();    // AP wifi密码
+    const String AP_url = global_config.AP_url.c_str();    // 域名
+    String str = file2str("/config.json");    // 读取文件内容
+    String wifiname = analysis_json(str, "wifiname");    // 解析WIFI名称
+    String wifipassword = analysis_json(str, "wifipassword");    // 解析WIFI密码
 
-    wifi_connect();                                   // 连接WIFI
+    connect_WIFI(wifiname, wifipassword);    // 连接WIFI
 
-    WiFi.mode(WIFI_AP_STA);                           // 打开AP和STA共存模式
-    WiFi.softAPConfig(APIp, APGateway, APSubnetMask); // 设置AP的IP地址，网关和子网掩码
-    WiFi.softAP(APSsid, APPassword, 6);               // 设置AP模式的登陆名和密码
+    WiFi.mode(WIFI_AP_STA);    // 打开AP和STA共存模式
+    WiFi.softAPConfig(AP_ip, AP_gateway, AP_subnetMask);    // 设置AP的IP地址，网关和子网掩码
+    WiFi.softAP(AP_ssid, AP_password, 6);    // 设置AP模式的登陆名和密码
 
-    dnsserver.start(DNS_PORT, url, APIp);             // 设置DNS的端口、网址、和IP
+    dnsserver.start(DNS_port, AP_url, AP_ip);    // 设置DNS的端口、网址、和IP
 
     Serial.print("AP模式IP地址为:");
     Serial.println(WiFi.softAPIP());
+
+    global_config.wifiname = wifiname;    // 设置WIFI名称
+    global_config.wifipassword = wifipassword;    // 设置WIFI密码
+    global_config.ip = WiFi.localIP().toString();    // 获取WIFI模式IP地址
+    global_config.AP_ip = WiFi.softAPIP().toString();    // 获取AP模式IP地址 
+
+    update_config();    // 更新配置文件
 }
 
 /**
@@ -64,4 +77,28 @@ void connect_NET()
 void DNS_request_loop()
 {
     dnsserver.processNextRequest();
+}
+
+/**
+ * @brief 返回网络参数
+*/
+void getCallback_readWIFI(AsyncWebServerRequest *request)
+{
+    request->send(200, "text/plain", global_config.wifiname);
+}
+
+/**
+ * @brief 返回网络参数
+*/
+void getCallback_readIP(AsyncWebServerRequest *request)
+{
+    request->send(200, "text/plain", global_config.ip);
+}
+
+/**
+ * @brief 返回网络参数
+*/
+void getCallback_readAPip(AsyncWebServerRequest *request)
+{
+    request->send(200, "text/plain", global_config.AP_ip);
 }

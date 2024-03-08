@@ -1,7 +1,5 @@
 #include "global.h"
 
-AsyncWebServer server(80); // 创建一个服务器对象，WEB服务器端口:80
-
 void setup()
 {
     Serial.begin(115200); // 串口波特率初始化
@@ -14,4 +12,7 @@ void setup()
 void loop()
 {
     DNS_request_loop(); // DNS服务请求处理
+
+    //analogWrite(LED_PIN, 255/2);
+    LED_root();
 }
