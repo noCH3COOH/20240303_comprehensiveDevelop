@@ -16,10 +16,6 @@ void GPIO_init()
     ledcAttachPin(LED2_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
     ledcAttachPin(LED3_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
     ledcAttachPin(LED4_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
-    ledcAttachPin(LED5_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
-    ledcAttachPin(LED6_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
-    ledcAttachPin(LED7_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
-    ledcAttachPin(LED8_PIN, BRIGHTNESS_CTRL_LED_CHANNEL);
 
     onBoard_LED_duty = 0;
     onBoard_LED_up = true;

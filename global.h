@@ -6,20 +6,19 @@
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <DNSServer.h>
+#include <DHT.h>
 
 // 定义LED引脚
 #define WORK_LED_CHANNEL 0
-#define BRIGHTNESS_CTRL_LED_CHANNEL 1
-
 #define LED_PIN 1
+
+#define BRIGHTNESS_CTRL_LED_CHANNEL 1
 #define LED1_PIN 5
 #define LED2_PIN 7
 #define LED3_PIN 16
 #define LED4_PIN 18
-#define LED5_PIN 4
-#define LED6_PIN 6
-#define LED7_PIN 15
-#define LED8_PIN 17
+
+#define DHT_PIN 0
 
 struct CONFIG
 {
@@ -33,6 +32,9 @@ struct CONFIG
 };
 
 struct CONFIG global_config;
+
+float dht11_humidity;
+float dht11_temperature;
 
 AsyncWebServer server(80); // 创建一个服务器对象，WEB服务器端口:80
 
