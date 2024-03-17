@@ -1,8 +1,5 @@
 #include "global.h"
 
-int onBoard_LED_duty;
-bool onBoard_LED_up;
-
 /**
  * @brief 初始化GPIO
 */
@@ -36,7 +33,7 @@ void LED_root()
     if(onBoard_LED_duty >= 1023 || onBoard_LED_duty <= 0)
         onBoard_LED_up = !onBoard_LED_up;   
 
-    delay(5);     
+    delayNoBlock_ms(5);     
 }
 
 /**
@@ -47,7 +44,7 @@ void getCallback_readLED(AsyncWebServerRequest *request)
     int LED_duty = (ledcRead(BRIGHTNESS_CTRL_LED_CHANNEL) / 10.23);
     request->send(200, "text/plain", String(LED_duty) + '%');
     
-    //String print_str = "LED PWM数值: " + String(LED_duty);
+    //String print_str = "[INFO] LED PWM数值: " + String(LED_duty);
     //Serial.println(print_str);
 }
 
@@ -63,11 +60,11 @@ void postCallback_setLED(AsyncWebServerRequest *request)
     for(int i=0; i<8; i++)
     {
         ledcWrite(BRIGHTNESS_CTRL_LED_CHANNEL, LED_duty);
-        delay(15);
+        delayNoBlock_ms(15);
     }
-    delay(500);
+    delayNoBlock_ms(500);
 
-    String print_str = "设置LED PWM数值为: " + pwm + "% (" + String(LED_duty) + ')';
+    String print_str = "[INFO] 设置LED PWM数值为: " + pwm + "% (" + String(LED_duty) + ')';
     Serial.println(print_str);
     request->send(200, "text/plain", "OK");
 }

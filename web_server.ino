@@ -6,7 +6,7 @@
 */
 void postCallback_setWIFI(AsyncWebServerRequest *request)
 {
-    Serial.println("收到设置WIFI按钮");
+    Serial.println("[INFO] 收到设置WIFI按钮");
     if (request->hasParam("wifiname", true))
     {
         AsyncWebParameter *wifiname = request->getParam("wifiname", true);    // 获取POST数据
@@ -24,7 +24,7 @@ void postCallback_setWIFI(AsyncWebServerRequest *request)
 */
 void web_server()
 {
-    Serial.println("初始化WEB服务器");
+    Serial.println("[INFO] 初始化WEB服务器");
     
     // 响应网站根目录的GET请求,返回文件index.html
     server.serveStatic("/", LittleFS, "/pages/").setDefaultFile("index.html"); 
@@ -35,11 +35,13 @@ void web_server()
     server.on("/setLED", HTTP_POST, postCallback_setLED);
 
     // GET请求
+    server.on("/temp", HTTP_GET, getCallback_readTemp);
+    server.on("/wet", HTTP_GET, getCallback_readWet);
     server.on("/bomb", HTTP_GET, getCallback_readLED);
     server.on("/wifi", HTTP_GET, getCallback_readWIFI);
     server.on("/ip", HTTP_GET, getCallback_readIP);
     server.on("/APip", HTTP_GET, getCallback_readAPip);
 
     server.begin();    // 初始化
-    Serial.println("WEB服务器初始化完成");
+    Serial.println("[SUCCESS] WEB服务器初始化完成");
 }

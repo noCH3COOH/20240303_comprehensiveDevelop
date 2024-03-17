@@ -1,7 +1,5 @@
 #include "global.h"
 
-DNSServer dnsserver;
-
 /**
  * @brief 连接WIFI
  * @param ssid WIFI名称
@@ -10,19 +8,19 @@ DNSServer dnsserver;
 void connect_WIFI(String ssid, String password)
 {
     WiFi.begin(ssid.c_str(), password.c_str());    // 连接WIFI
-    Serial.print("连接WIFI");
+    Serial.print("[INFO] 连接WIFI");
     
     // 循环，10秒后连接不上跳出循环
     int i = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
         Serial.print(".");
-        delay(500);
+        delayNoBlock_ms(500);
         i++;
         if (i > 20)
         {
             Serial.println();
-            Serial.println("WIFI连接失败");
+            Serial.println("[ERROR] WIFI连接失败");
             return;
         }
     }
@@ -30,9 +28,9 @@ void connect_WIFI(String ssid, String password)
     IPAddress local_IP = WiFi.localIP();
     
     Serial.println();
-    Serial.print("WIFI连接成功:");    // 连接成功提示
+    Serial.print("[SUCCESS] WIFI连接成功:");    // 连接成功提示
     Serial.println(ssid.c_str());
-    Serial.print("本地IP地址:");
+    Serial.print("[INFO] 本地IP地址:");
     Serial.println(local_IP);
 }
 
@@ -60,7 +58,7 @@ void connect_NET()
 
     dnsserver.start(DNS_port, AP_url, AP_ip);    // 设置DNS的端口、网址、和IP
 
-    Serial.print("AP模式IP地址为:");
+    Serial.print("[INFO] AP模式IP地址为:");
     Serial.println(WiFi.softAPIP());
 
     global_config.wifiname = wifiname;    // 设置WIFI名称

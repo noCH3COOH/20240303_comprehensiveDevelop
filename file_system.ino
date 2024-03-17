@@ -7,11 +7,11 @@
 */
 bool str2file(String path, String str)
 {
-    Serial.println("写入文件" + path);
+    Serial.println("[INFO] 写入文件" + path);
     File wf = LittleFS.open(path, "w");    // 以写入模式打开文件
     if (!wf)
     {    // 如果无法打开文件
-        Serial.println("打开文件写入时错误");    // 显示错误信息
+        Serial.println("[ERROR] 打开文件写入时错误");    // 显示错误信息
         return false;    // 无法打开文件直接返回
     }
     
@@ -28,15 +28,20 @@ bool str2file(String path, String str)
 */
 String file2str(String path)
 {
-    Serial.println("读取文件");
+    Serial.println("[INFO] 读取文件：" + path);
+
     File rf = LittleFS.open(path, "r");    // 以读取模式打开文件
+
     if (!rf)
     {    // 如果无法打开文件
-        Serial.println("打开文件读取时错误");    // 显示错误信息
+        Serial.println("[ERROR] 打开文件读取时错误");    // 显示错误信息
         return "";    // 无法打开文件直接返回
     }
+
     String str = rf.readString();    // 读取字符串
     rf.close();    // 关闭文件
+
+    Serial.println("[SUCCESS] 读取文件成功：" + path);
     return str;
 }
 
@@ -59,13 +64,13 @@ String analysis_json(String str, String Name)
 */
 void LittleFS_begin()
 {
-    Serial.println();
-    Serial.println("初始化文件系统");
+    Serial.println("[INFO] 初始化文件系统");
     if (!LittleFS.begin(true))
     {
-        Serial.println("文件系统初始化错误");
+        Serial.println("[ERROR] 文件系统初始化错误");
         return;
     }
+    Serial.println("[SUCCESS] 文件系统初始化成功");
 }
 
 /**
@@ -73,7 +78,7 @@ void LittleFS_begin()
 */
 void update_config()
 {
-    Serial.println("更新配置文件");
+    Serial.println("[INFO] 更新配置文件");
     
     StaticJsonDocument<200> config;
     String str_config;
@@ -93,8 +98,10 @@ void update_config()
     {
         retry += 1;
         if(retry < 3)
-            Serial.printf("配置文件更新失败，重试 %d 次", retry);
+            Serial.printf("[ERROR] 配置文件更新失败，重试 %d 次", retry);
         else
-            Serial.println("配置文件更新全部失败，请重置系统");
+            Serial.println("[ERROR] 配置文件更新全部失败，请重置系统");
     }
+
+    Serial.println("[SUCCESS] 更新配置文件成功");
 }

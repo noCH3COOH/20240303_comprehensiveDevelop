@@ -1,12 +1,11 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef __GLOBAL_H__
+#define __GLOBAL_H__
 
 #include "ESPAsyncWebServer.h"
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <DNSServer.h>
-#include <DHT.h>
 
 // 定义LED引脚
 #define WORK_LED_CHANNEL 0
@@ -19,6 +18,16 @@
 #define LED4_PIN 18
 
 #define DHT_PIN 0
+
+#define delayNoBlock_us(us) { \
+        unsigned long perviousTime, currentTime = micros(); \
+        do { perviousTime = micros(); } while((perviousTime - currentTime) < us); \
+    }
+
+#define delayNoBlock_ms(ms) { \
+        unsigned long perviousTime, currentTime = millis(); \
+        do { perviousTime = millis(); } while((perviousTime - currentTime) < ms); \
+    }
 
 struct CONFIG
 {
@@ -33,9 +42,13 @@ struct CONFIG
 
 struct CONFIG global_config;
 
-float dht11_humidity;
-float dht11_temperature;
+int onBoard_LED_duty;
+bool onBoard_LED_up;
+
+uint8_t dht11_temperature;
+uint8_t dht11_humidity;
 
 AsyncWebServer server(80); // 创建一个服务器对象，WEB服务器端口:80
+DNSServer dnsserver;
 
 #endif
