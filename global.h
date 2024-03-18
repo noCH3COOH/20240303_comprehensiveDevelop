@@ -17,8 +17,6 @@
 #define LED3_PIN 16
 #define LED4_PIN 18
 
-#define DHT_PIN 0
-
 #define delayNoBlock_us(us) { \
         unsigned long perviousTime, currentTime = micros(); \
         do { perviousTime = micros(); } while((perviousTime - currentTime) < us); \
@@ -44,9 +42,6 @@ struct CONFIG global_config;
 
 int onBoard_LED_duty;
 bool onBoard_LED_up;
-
-uint8_t dht11_temperature;
-uint8_t dht11_humidity;
 
 AsyncWebServer server(80); // 创建一个服务器对象，WEB服务器端口:80
 DNSServer dnsserver;
