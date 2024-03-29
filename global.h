@@ -6,6 +6,8 @@
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <DNSServer.h>
+#include <DHT.h>
+#include <DHT_U.h>
 
 // 定义LED引脚
 #define WORK_LED_CHANNEL 0
@@ -43,7 +45,12 @@ struct CONFIG global_config;
 int onBoard_LED_duty;
 bool onBoard_LED_up;
 
+uint8_t dht11_temperature;
+uint8_t dht11_humidity;
+
 AsyncWebServer server(80); // 创建一个服务器对象，WEB服务器端口:80
 DNSServer dnsserver;
+
+DHT dht(DHT_PIN, DHT11);
 
 #endif

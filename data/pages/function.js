@@ -39,7 +39,7 @@ setInterval(function() {
     get_request('wifi', '/wifi');
     get_request('ip', '/ip');
     get_request('APip', '/APip');
-}, 2000);
+}, 5000);
 
 /**
  * @brief:	向path发送POST请求，并通过后台send()方法发送
