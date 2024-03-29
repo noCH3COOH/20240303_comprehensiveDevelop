@@ -7,15 +7,16 @@ void setup()
     connect_NET();      // 网络初始化
     web_server();       // WEB服务器初始化
     GPIO_init();
-    dht11_init();
+    //dht11_init();
 
-    dht11_humidity = -1;
-    dht11_temperature = -1;
+    dht.begin();
 }
 
 void loop()
 {
     DNS_request_loop(); // DNS服务请求处理
 
-    //LED_root();
+    dht11_temperature = dht.readTemperature(); 
+    dht11_humidity = dht.readHumidity(); 
+    delayNoBlock_ms(250);
 }
