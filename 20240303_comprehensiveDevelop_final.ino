@@ -9,6 +9,8 @@ void setup()
     GPIO_init();
     //dht11_init();
 
+    GPIO_init();        // GPIO初始化
+
     dht.begin();
 }
 
