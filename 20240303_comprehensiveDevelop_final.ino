@@ -6,6 +6,8 @@ void setup()
     LittleFS_begin();   // LittleFS文件系统初始化
     connect_NET();      // 网络初始化
     web_server();       // WEB服务器初始化
+    GPIO_init();
+    //dht11_init();
 
     dht.begin();
 }

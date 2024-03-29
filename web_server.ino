@@ -35,6 +35,8 @@ void web_server()
     server.on("/setLED", HTTP_POST, postCallback_setLED);
 
     // GET请求
+    server.on("/temp", HTTP_GET, getCallback_readTemp);
+    server.on("/wet", HTTP_GET, getCallback_readWet);
     server.on("/bomb", HTTP_GET, getCallback_readLED);
     server.on("/wifi", HTTP_GET, getCallback_readWIFI);
     server.on("/ip", HTTP_GET, getCallback_readIP);

@@ -35,6 +35,8 @@ function get_request(ElementId , path)
 } 
 
 setInterval(function() {
+    get_request('temp', '/temp');
+    get_request('wet', '/wet');
     get_request('bomb', '/bomb');
     get_request('wifi', '/wifi');
     get_request('ip', '/ip');
