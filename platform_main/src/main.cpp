@@ -1,13 +1,10 @@
-#include "global.h"
+#include "main.h"
 
-void setup()
+void setup() 
 {
-    Serial.begin(115200); // 串口波特率初始化
-    LittleFS_begin();   // LittleFS文件系统初始化
-    connect_NET();      // 网络初始化
-    web_server();       // WEB服务器初始化
-    //GPIO_init();        // GPIO初始化
-    dht.begin();
+    // put your setup code here, to run once:
+    
+    LED_init();
 
     xl9555_init();          /* IO扩展芯片初始化 */
     lcd_init();             /* LCD初始化 */
@@ -33,11 +30,10 @@ void setup()
     delay(500);
 }
 
-void loop()
+void loop() 
 {
-    DNS_request_loop(); // DNS服务请求处理
-
-    dht11_getData();
+    // put your main code here, to run repeatedly:
+    LED_root();
 
     demo_show_cube();   /* 演示立方体3D旋转 */
-}N
+}
