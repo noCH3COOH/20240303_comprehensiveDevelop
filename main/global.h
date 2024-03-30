@@ -9,6 +9,11 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
+#include "xl9555.h"
+#include "spilcd.h"
+#include "alientek_logo.h"
+#include "demo_show.h"
+
 // 定义LED引脚
 #define WORK_LED_CHANNEL 0
 #define LED_PIN 1
