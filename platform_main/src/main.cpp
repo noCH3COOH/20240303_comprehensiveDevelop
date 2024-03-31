@@ -1,3 +1,5 @@
+// ==================== includes ====================
+
 #include "main.h"
 
 // ==================== global variables ====================
@@ -35,6 +37,8 @@ void loop()
     //LED_root();
     DNS_request_loop(); // DNS服务请求处理
 }
+
+// ==================== freertos 相关 ==================== 
 
 /**
  * @brief FreeRTOS初始化
