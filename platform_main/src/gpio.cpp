@@ -2,21 +2,27 @@
 
 // ==================== global variables ====================
 
-GPIO_t led(1, 1, 5000, 10, 50);
+GPIO_t led(BRIGHTNESS_CTRL_LED_CHANNEL, BRIGHTNESS_CTRL_LED_PIN, 5000, 10, 50);
 
 int loop_duty = 0;
 bool loop_direation = true;
 
 // ==================== functions ====================
 
+/**
+ * @brief 初始化 LED
+*/
 void LED_init()
 {
     led.on();
 }
 
+/**
+ * @brief LED 主循环
+*/
 void LED_root()
 {
-    delay(100);
+    delayNoBlock_ms(100);
     
     if(loop_direation)
     {
@@ -40,6 +46,37 @@ void LED_root()
 
     led.set_pwm_duty(loop_duty);
 }
+
+/**
+ * @brief 读取 LED PWM数值
+*/
+void getCallback_readLED(AsyncWebServerRequest *request)
+{
+    const String str_request = String(std::to_string(PWM_CALC(led.get_pwm_duty()) / 10.23).c_str()) + "%";
+    request->send(200, "text/plain", str_request);
+}
+
+/**
+ * @brief 设置 LED PWM数值
+ * @param request 请求
+*/
+void postCallback_setLED(AsyncWebServerRequest *request)
+{
+    String pwm = (request->arg("LED_pwm")).c_str();
+    int LED_duty;
+    std::sscanf(pwm.c_str(), "%d", &LED_duty);
+
+    for(int i=0; i<8; i++)
+    {
+        led.set_pwm_duty(PWM_CALC(LED_duty * 10.23));
+        delayNoBlock_ms(15);
+    }
+    delayNoBlock_ms(500);
+
+    log_now("[INFO] 设置LED PWM数值为: " + pwm + "% (" + std::to_string(PWM_CALC(LED_duty * 10.23)).c_str() + ')');
+    request->send(200, "text/plain", "OK");
+}
+
 
 // ==================== GPIO_t ====================
 
@@ -225,7 +262,7 @@ uint8_t GPIO_t::get_pwm_channel()
  * @brief 获取 PWM 占空比
  * @return PWM 占空比
 */
-uint8_t GPIO_t::get_pwm_duty()
+uint32_t GPIO_t::get_pwm_duty()
 {
     return this->pwm_duty;
 }

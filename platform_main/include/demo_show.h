@@ -25,6 +25,10 @@
 #ifndef __DEMO_SHOW_H
 #define __DEMO_SHOW_H
 
+#include <Arduino.h>
+#include "spilcd.h"
+#include <math.h>
+
 /* 函数声明 */
 void demo_show_cube(void);
 

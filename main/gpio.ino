@@ -42,10 +42,7 @@ void LED_root()
 void getCallback_readLED(AsyncWebServerRequest *request)
 {
     int LED_duty = (ledcRead(BRIGHTNESS_CTRL_LED_CHANNEL) / 10.23);
-    request->send(200, "text/plain", String(LED_duty) + '%');
-    
-    //String print_str = "[INFO] LED PWM数值: " + String(LED_duty);
-    //Serial.println(print_str);
+    request->send(200, "text/plain", String(std::to_string(LED_duty)) + '%');
 }
 
 /**

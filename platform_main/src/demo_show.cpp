@@ -23,10 +23,6 @@
  */
 
 #include "demo_show.h" 
-#include "spilcd.h"
-#include <math.h>
-
-#define PI (float)(3.1415926)
 
 static float cube[8][3] = {
     {-16, -16, -16},

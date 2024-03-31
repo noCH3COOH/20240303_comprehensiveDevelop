@@ -4,6 +4,10 @@
 // ==================== includes ====================
 
 #include <Arduino.h>
+#include "delayNoBlock.h"
+#include "ESPAsyncWebServer.h"
+
+#include "log.h"
 
 // ==================== defines ====================
 
@@ -12,17 +16,19 @@
 #ifdef LED_connectVCC
     #define LED_ON LOW
     #define LED_OFF HIGH
+    #define PWM_CALC(x) (1023 - x)
 #else
     #define LED_ON HIGH
     #define LED_OFF LOW
+    #define PWM_CALC(x) x
 #endif
 
-// ==================== functions ====================
+#define BRIGHTNESS_CTRL_LED_CHANNEL 1
+#define BRIGHTNESS_CTRL_LED_PIN 1
 
-void LED_init();
-void LED_root();
+// ==================== global variables ====================
 
-// ==================== GPIO_t ====================
+// ==================== classes ====================
 
 class GPIO_t
 {
@@ -57,9 +63,17 @@ class GPIO_t
         
         uint8_t get_pin();
         uint8_t get_pwm_channel();
-        uint8_t get_pwm_duty();
+        uint32_t get_pwm_duty();
         uint8_t get_pwm_resolution();
         uint32_t get_pwm_freq();
 };
+
+// ==================== functions ====================
+
+void LED_init();
+void LED_root();
+
+void getCallback_readLED(AsyncWebServerRequest *request);
+void postCallback_setLED(AsyncWebServerRequest *request);
 
 #endif

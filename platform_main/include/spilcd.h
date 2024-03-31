@@ -103,29 +103,29 @@ typedef enum
 #define DFT_SCAN_DIR    L2R_U2D     /* 默认的扫描方向 */
 
 /* 画笔颜色 */
-#define WHITE               0xFFFF
-#define BLACK               0x0000
-#define BLUE                0x001F  
-#define BRED                0XF81F
-#define GRED                0XFFE0
-#define GBLUE               0X07FF
-#define RED                 0xF800
-#define MAGENTA             0xF81F
-#define GREEN               0x07E0
-#define CYAN                0x7FFF
-#define YELLOW              0xFFE0
-#define BROWN               0XBC40      /* 棕色 */
-#define BRRED               0XFC07      /* 棕红色 */
-#define GRAY                0X8430      /* 灰色 */
-#define DARKBLUE            0X01CF      /* 深蓝色 */
-#define LIGHTBLUE           0X7D7C      /* 浅蓝色 */
-#define GRAYBLUE            0X5458      /* 灰蓝色 */
+#define WHITE               (uint16_t)(0xFFFF)
+#define BLACK               (uint16_t)(0x0000)
+#define BLUE                (uint16_t)(0x001F)  
+#define BRED                (uint16_t)(0XF81F)
+#define GRED                (uint16_t)(0XFFE0)
+#define GBLUE               (uint16_t)(0X07FF)
+#define RED                 (uint16_t)(0xF800)
+#define MAGENTA             (uint16_t)(0xF81F)
+#define GREEN               (uint16_t)(0x07E0)
+#define CYAN                (uint16_t)(0x7FFF)
+#define YELLOW              (uint16_t)(0xFFE0)
+#define BROWN               (uint16_t)(0XBC40)      /* 棕色 */
+#define BRRED               (uint16_t)(0XFC07)      /* 棕红色 */
+#define GRAY                (uint16_t)(0X8430)      /* 灰色 */
+#define DARKBLUE            (uint16_t)(0X01CF)      /* 深蓝色 */
+#define LIGHTBLUE           (uint16_t)(0X7D7C)      /* 浅蓝色 */
+#define GRAYBLUE            (uint16_t)(0X5458)      /* 灰蓝色 */
 /* 以上三色为PANEL的颜色  */
-#define LIGHTGREEN          0X841F      /* 浅绿色 */
-#define LGRAY               0XC618      /* 浅灰色(PANNEL),窗体背景色 */
+#define LIGHTGREEN          (uint16_t)(0X841F)      /* 浅绿色 */
+#define LGRAY               (uint16_t)(0XC618)      /* 浅灰色(PANNEL),窗体背景色 */
 
-#define LGRAYBLUE           0XA651      /* 浅灰蓝色(中间层颜色) */
-#define LBBLUE              0X2B12      /* 浅棕蓝色(选择条目的反色) */
+#define LGRAYBLUE           (uint16_t)(0XA651)      /* 浅灰蓝色(中间层颜色) */
+#define LBBLUE              (uint16_t)(0X2B12)      /* 浅棕蓝色(选择条目的反色) */
 
 /* 函数声明 */
 /* lcd驱动函数 */
