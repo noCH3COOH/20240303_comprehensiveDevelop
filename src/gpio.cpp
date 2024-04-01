@@ -85,8 +85,8 @@ void postCallback_setLED(AsyncWebServerRequest *request)
 */
 GPIO_t::GPIO_t()
 {
-    this->pin = 0;
     this->pin_mode = 0;
+    this->pin_count = 0;
 
     this->pwm_channel = 0;
     this->pwm_duty = 0;
@@ -103,7 +103,8 @@ GPIO_t::GPIO_t()
 */
 GPIO_t::GPIO_t(uint8_t pin, uint8_t pin_mode)
 {
-    this->pin = pin;
+    this->pin[0] = pin;
+    this->pin_count = 1;
     this->pin_mode = OUTPUT;
 
     this->pwm_channel = 0;
@@ -116,7 +117,8 @@ GPIO_t::GPIO_t(uint8_t pin, uint8_t pin_mode)
 
 GPIO_t::GPIO_t(uint8_t pwm_channel, uint8_t pin, uint32_t freq, uint8_t resolution, uint32_t duty)
 {
-    this->pin = pin;
+    this->pin[0] = pin;
+    this->pin_count = 1;
     this->pin_mode = OUTPUT;
 
 
@@ -137,6 +139,58 @@ GPIO_t::~GPIO_t()
 }
 
 /**
+ * @brief 添加引脚
+ * @param pin 引脚
+ * @return 是否添加成功
+ * @note GPIO_t_OK 添加成功
+ * @note GPIO_t_ERROR 添加失败，可能有重复引脚
+*/
+enum GPIO_t_ErrorCode GPIO_t::add_pin(uint8_t pin)
+{
+    for(int i=0; i<this->pin_count; i++)
+    {
+        if (this->pin[i] == pin)
+            return GPIO_t_ERROR;
+    }
+    
+    this->pin[this->pin_count] = pin;
+    this->pin_count++;
+
+    if(this->pwm_flag)
+    {
+        ledcSetup(this->pwm_channel, this->pwm_freq, this->pwm_resolution);
+        ledcAttachPin(pin, this->pwm_channel);
+        ledcWrite(this->pwm_channel, this->pwm_duty);
+    }
+    else
+        pinMode(pin, this->pin_mode);
+
+    return GPIO_t_OK;
+}
+
+/**
+ * @brief 删除引脚
+ * @param pin 引脚
+ * @return 是否删除成功
+ * @note GPIO_t_OK 删除成功
+ * @note GPIO_t_ERROR 删除失败
+*/
+enum GPIO_t_ErrorCode GPIO_t::delete_pin(uint8_t pin)
+{
+    for(int i=0; i<this->pin_count; i++)
+    {
+        if (this->pin[i] == pin)
+        {
+            for(int j=i; j<this->pin_count-1; j++)
+                this->pin[j] = this->pin[j+1];
+            this->pin_count--;
+            return GPIO_t_OK;
+        }
+    }
+    return GPIO_t_ERROR;
+}
+
+/**
  * @brief 打开引脚
 */
 void GPIO_t::on()
@@ -144,12 +198,14 @@ void GPIO_t::on()
     if (this->pwm_flag)
     {
         ledcSetup(this->pwm_channel, this->pwm_freq, this->pwm_resolution);
-        ledcAttachPin(this->pin, this->pwm_channel);
+        for(int i=0; i<this->pin_count; i++)
+            ledcAttachPin(this->pin[i], this->pwm_channel);
         ledcWrite(this->pwm_channel, this->pwm_duty);
     }
     else
     {
-        digitalWrite(this->pin, LED_ON);
+        for(int i=0; i<this->pin_count; i++)
+            digitalWrite(this->pin[0], LED_ON);
     }
 }
 
@@ -164,19 +220,9 @@ void GPIO_t::off()
     }
     else
     {
-        digitalWrite(this->pin, LED_OFF);
+        for(int i=0; i<this->pin_count; i++)
+            digitalWrite(this->pin[i], LED_OFF);
     }
-}
-
-
-/**
- * @brief 设置引脚
- * @param pin 引脚
-*/
-void GPIO_t::set_pin(uint8_t pin)
-{
-    this->off();    // 关闭引脚
-    this->pin = pin;
 }
 
 /**
@@ -188,10 +234,12 @@ void GPIO_t::set_pwm_channel(uint8_t pwm_channel)
 {   
     this->pwm_channel = pwm_channel;
     ledcWrite(pwm_channel, 0);
-    ledcDetachPin(this->pin);
+    for(int i=0; i<this->pin_count; i++)
+        ledcDetachPin(this->pin[i]);
 
     ledcSetup(pwm_channel, this->pwm_freq, this->pwm_resolution);
-    ledcAttachPin(this->pin, pwm_channel);
+    for(int i=0; i<this->pin_count; i++)
+        ledcAttachPin(this->pin[i], pwm_channel);
     ledcWrite(pwm_channel, this->pwm_duty);
 }
 
@@ -233,20 +281,49 @@ void GPIO_t::set_pwm_freq(uint32_t freq)
 
 /**
  * @brief 获取引脚状态
+ * @param pin 引脚 
  * @return 引脚状态
+ * @note GPIO_t_OK PWM 通道占空比大于 0
+ * @note GPIO_t_HIGH 引脚高电平
+ * @note GPIO_t_LOW 引脚低电平
+ * @note GPIO_t_ERROR 引脚错误
 */
-bool GPIO_t::get_pinState()
+enum GPIO_t_ErrorCode GPIO_t::get_pinState(uint8_t pin)
 {
-    return digitalRead(this->pin);
+    for(int i=0; i<this->pin_count; i++)
+    {
+        if(pin != this->pin[i])
+            continue;
+        else
+        {
+            if (this->pwm_flag)
+            {
+                if (ledcRead(this->pwm_channel) > 0)
+                    return GPIO_t_OK;
+                else
+                    return GPIO_t_LOW;
+            }
+            else
+            {
+                if(LED_ON == digitalRead(pin))
+                    return GPIO_t_HIGH;
+                else
+                    return GPIO_t_LOW;
+            }
+        }
+    }
+
+    return GPIO_t_ERROR;
 }
 
 /**
  * @brief 获取引脚
+ * @param index 索引
  * @return 引脚
 */
-uint8_t GPIO_t::get_pin()
+uint8_t GPIO_t::get_pin(uint8_t index)
 {
-    return this->pin;
+    return this->pin[index];
 }
 
 /**
