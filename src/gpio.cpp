@@ -27,17 +27,17 @@ void LED_root()
     
     if(loop_direation)
     {
-        loop_duty += 50;
+        loop_duty += 10;
     }
     else
     {
-        loop_duty -= 50;
+        loop_duty -= 10;
     }
 
-    if(loop_duty >= 1024)
+    if(loop_duty >= 100)
     {
         loop_direation = false;
-        loop_duty = 1024;
+        loop_duty = 100;
     }
     else if(loop_duty <= 0)
     {

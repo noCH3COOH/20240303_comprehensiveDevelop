@@ -16,11 +16,11 @@
 #ifdef LED_connectVCC
     #define LED_ON LOW
     #define LED_OFF HIGH
-    #define PWM_CALC(x) int(1023 - x)
+    #define PWM_CALC(x) uint32_t(1023 - x)
 #else
     #define LED_ON HIGH
     #define LED_OFF LOW
-    #define PWM_CALC(x) int(x)
+    #define PWM_CALC(x) uint32_t(x)
 #endif
 
 #define BRIGHTNESS_CTRL_LED_CHANNEL 1
