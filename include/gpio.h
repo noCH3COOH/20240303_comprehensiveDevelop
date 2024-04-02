@@ -70,16 +70,16 @@ class GPIO_t
         GPIO_t_retval<bool> add_pin(uint8_t pin);
         GPIO_t_retval<bool> delete_pin(uint8_t pin);
         
-        GPIO_t_retval<bool> set_mode(String mode = "plain", uint8_t pin_mode);
-        GPIO_t_retval<bool> set_mode(String mode = "pwm", uint8_t pwm_channel, uint32_t freq, uint8_t resolution, uint8_t duty);
-        GPIO_t_retval<bool> set_mode(String mode = "adc");
+        GPIO_t_retval<bool> set_mode(uint8_t pin_mode);
+        GPIO_t_retval<bool> set_mode_pwm(uint8_t pwm_channel, uint32_t freq, uint8_t resolution, uint8_t duty);
+        GPIO_t_retval<bool> set_mode_adc();
         
         GPIO_t_retval<bool> set_pwm_channel(uint8_t pwm_channel);
         GPIO_t_retval<bool> set_pwm_resolution(uint8_t resolution);
         GPIO_t_retval<bool> set_pwm_duty(uint8_t duty);
         GPIO_t_retval<bool> set_pwm_freq(uint32_t freq);
 
-        GPIO_t_retval<uint8_t> get_pinState(uint8_t pin);
+        GPIO_t_retval<int8_t> get_pinState(uint8_t pin);
         GPIO_t_retval<uint8_t> get_pin(uint8_t index);
         GPIO_t_retval<uint8_t> get_pwm_channel();
         GPIO_t_retval<uint8_t> get_pwm_resolution();

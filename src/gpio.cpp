@@ -14,7 +14,7 @@ bool loop_direation = true;
 */
 void LED_init()
 {
-    led.set_mode("pwm", BRIGHTNESS_CTRL_LED_CHANNEL, 5000, 10, 50);
+    led.set_mode_pwm(BRIGHTNESS_CTRL_LED_CHANNEL, 5000, 10, 50);
     led.on();
 }
 
@@ -227,7 +227,7 @@ GPIO_t_retval<bool> GPIO_t::delete_pin(uint8_t pin)
 /**
  * @brief 设置模式
 */
-GPIO_t_retval<bool> GPIO_t::set_mode(String mode = "plain", uint8_t pin_mode)
+GPIO_t_retval<bool> GPIO_t::set_mode(uint8_t pin_mode)
 {
     this->pin_mode = pin_mode;
 
@@ -237,7 +237,7 @@ GPIO_t_retval<bool> GPIO_t::set_mode(String mode = "plain", uint8_t pin_mode)
     return {true, GPIO_t_OK};
 }
 
-GPIO_t_retval<bool> GPIO_t::set_mode(String mode = "pwm", uint8_t pwm_channel, uint32_t freq, uint8_t resolution, uint8_t duty)
+GPIO_t_retval<bool> GPIO_t::set_mode_pwm(uint8_t pwm_channel, uint32_t freq, uint8_t resolution, uint8_t duty)
 {
     this->pwm_channel = pwm_channel;
     this->pwm_freq = freq;
@@ -254,7 +254,7 @@ GPIO_t_retval<bool> GPIO_t::set_mode(String mode = "pwm", uint8_t pwm_channel, u
     return {true, GPIO_t_OK};
 }
 
-GPIO_t_retval<bool> GPIO_t::set_mode(String mode = "adc")
+GPIO_t_retval<bool> GPIO_t::set_mode_adc()
 {
     for(int i=0; i<(this->pin_count); i++)
         pinMode(this->pin[i], INPUT);
@@ -336,7 +336,7 @@ GPIO_t_retval<bool> GPIO_t::set_pwm_freq(uint32_t freq)
  * @note {1/0, GPIO_t_OK} plain引脚
  * @note {-1, GPIO_t_ERROR} 失败
 */
-GPIO_t_retval<uint8_t> GPIO_t::get_pinState(uint8_t pin)
+GPIO_t_retval<int8_t> GPIO_t::get_pinState(uint8_t pin)
 {
     for(int i=0; i<(this->pin_count); i++)
     {
@@ -346,7 +346,7 @@ GPIO_t_retval<uint8_t> GPIO_t::get_pinState(uint8_t pin)
         {
             if (this->pwm_flag)
             {
-                uint8_t read_duty = PWM_CALC(ledcRead(this->pwm_channel)) / 10.23;
+                int8_t read_duty = PWM_CALC(ledcRead(this->pwm_channel)) / 10.23;
                 if (read_duty > 0)
                     return {read_duty, GPIO_t_OK};
                 else
