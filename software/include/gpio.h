@@ -11,9 +11,9 @@
 
 // ==================== defines ====================
 
-#define LED_connectVCC 
+#define LED_connectVCC 1
 
-#ifdef LED_connectVCC
+#if LED_connectVCC
     #define LED_ON LOW
     #define LED_OFF HIGH
     #define PWM_CALC(x) uint32_t(1023 - x)

@@ -29,6 +29,11 @@ void setup()
 
     LED_init();
 
+    xl9555_io_config(KEY0, IO_SET_INPUT);
+    xl9555_io_config(KEY1, IO_SET_INPUT);
+    xl9555_io_config(KEY2, IO_SET_INPUT);
+    xl9555_io_config(KEY3, IO_SET_INPUT);
+
     xl9555_init();          /* IO扩展芯片初始化 */
     lcd_init();             /* LCD初始化 */
 
@@ -53,11 +58,11 @@ void setup()
     /*Initialize the (dummy) input device driver*/
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init( &indev_drv );
-    indev_drv.type = LV_INDEV_TYPE_BUTTON;
+    indev_drv.type = LV_INDEV_TYPE_KEYPAD;
     indev_drv.read_cb = my_touchpad_read;
     lv_indev_drv_register( &indev_drv );
 
-    // uncomment one of these demos
+    // uncomment one of these demos 取消注释这些演示之一
     lv_demo_widgets();            // OK
     // lv_demo_benchmark();          // OK
     // lv_demo_keypad_encoder();     // works, but I haven't an encoder
@@ -77,45 +82,47 @@ void loop()
 
 // ==================== LVGL 相关 ==================== 
 
-void my_disp_flush( _lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p )
+void my_disp_flush( _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p )
 {
     uint32_t w = ( area->x2 - area->x1 + 1 );
     uint32_t h = ( area->y2 - area->y1 + 1 );
 
     lcd_fill( area->x1, area->y1, area->x2, area->y2, color_p->full);
 
-    lv_disp_flush_ready( disp );
+    lv_disp_flush_ready( disp_drv );
 }
 
 void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data )
 {
-    // uint16_t touchX, touchY;
-// 
-    // bool touched = tft.getTouch( &touchX, &touchY, 600 );
-// 
-    // if( !touched )
-    // {
-    //     data->state = LV_INDEV_STATE_REL;
-    // }
-    // else
-    // {
-    //     data->state = LV_INDEV_STATE_PR;
-// 
-    //     /*Set the coordinates*/
-    //     data->point.x = touchX;
-    //     data->point.y = touchY;
-// 
-    //     Serial.print( "Data x " );
-    //     Serial.println( touchX );
-// 
-    //     Serial.print( "Data y " );
-    //     Serial.println( touchY );
-    // }
+    bool leftKey = (IO_SET_HIGH == xl9555_get_pin(KEY0)) ? true : false;
+    bool rightKey = (IO_SET_HIGH == xl9555_get_pin(KEY1)) ? true : false;
+    bool upKey = (IO_SET_HIGH == xl9555_get_pin(KEY2)) ? true : false;
+    bool downKey = (IO_SET_HIGH == xl9555_get_pin(KEY3)) ? true : false;
 
-    bool leftKey = false;
-    bool rightKey = false;
-    bool upKey = false;
-    bool centerKey = false;
+    if(leftKey)
+    {
+        data->key = LV_KEY_LEFT;
+        log_now("[INFO] left key pressed");
+    }
+    else if(rightKey)
+    {
+        data->key = LV_KEY_RIGHT;
+        log_now("[INFO] right key pressed");
+    }
+    else if(upKey)
+    {
+        data->key = LV_KEY_UP;
+        log_now("[INFO] up key pressed");
+    }
+    else if(downKey)
+    {
+        data->key = LV_KEY_DOWN;
+        log_now("[INFO] down key pressed");
+    }
+    else
+    {
+
+    }
 }
 
 // ==================== freertos 相关 ==================== 
