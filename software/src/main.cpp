@@ -15,6 +15,9 @@ String str_uart = "";
 void setup() 
 { 
     log_init();
+
+    log_now("[INFO] 内部 RAM 空闲大小：" + String(heap_caps_get_free_size(MALLOC_CAP_DEFAULT)));
+    log_now("[INFO] PSRAM 空闲大小：" + String(heap_caps_get_free_size(MALLOC_CAP_SPIRAM)));
     
     LittleFS_begin();   // LittleFS文件系统初始化
     connect_NET();      // 网络初始化
