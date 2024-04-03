@@ -1,2 +1,4 @@
-.*
+software/.pio/build
+software/.pio/libdeps
+software/.vscode
 requirements.txt
