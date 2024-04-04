@@ -11,9 +11,6 @@
 #include "delayNoBlock.h"
 
 #include "xl9555.h"
-#include "spilcd.h"
-#include "demo_show.h"
-#include "alientek_logo.h"
 
 #include "gpio.h"
 #include "dht11.h"
@@ -21,11 +18,15 @@
 #include "net_connect.h"
 #include "web_server.h"
 
-#include "lvgl.h"
+#include "TFT_eSPI.h"
+#include "XPT2046_Touchscreen.h"
 
 // ==================== defines ====================
 
 #define LVGL_BUF_SIZE (screenWidth * screenHeight) / 10
+
+#define CS_PIN 35
+
 
 // ==================== global variables ====================
 
@@ -37,9 +38,9 @@ extern String str_uart;
 void setup();
 void loop();
 
-void lvgl_init();
-void my_disp_flush( _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
-void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
+// void lvgl_init();
+// void my_disp_flush( _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
+// void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 
 void freertos_init();
 void freertos_task1(void *pvParameters);
