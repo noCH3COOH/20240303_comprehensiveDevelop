@@ -23,10 +23,9 @@
 
 #include "lvgl.h"
 
-#include "lv_demo.h"
-#include "lv_examples.h"
-
 // ==================== defines ====================
+
+#define LVGL_BUF_SIZE (screenWidth * screenHeight) / 10
 
 // ==================== global variables ====================
 
@@ -38,6 +37,7 @@ extern String str_uart;
 void setup();
 void loop();
 
+void lvgl_init();
 void my_disp_flush( _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
 void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 

@@ -11,7 +11,7 @@ static const uint16_t screenWidth  = 240;
 static const uint16_t screenHeight = 240;
 
 static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf[ screenWidth * 10 ];
+static lv_color_t buf[ LVGL_BUF_SIZE ];
 
 // ==================== 业务 ====================
 
@@ -29,24 +29,43 @@ void setup()
 
     LED_init();
 
+    xl9555_init();          /* IO扩展芯片初始化 */
+    
     xl9555_io_config(KEY0, IO_SET_INPUT);
     xl9555_io_config(KEY1, IO_SET_INPUT);
     xl9555_io_config(KEY2, IO_SET_INPUT);
     xl9555_io_config(KEY3, IO_SET_INPUT);
 
-    xl9555_init();          /* IO扩展芯片初始化 */
     lcd_init();             /* LCD初始化 */
 
-    freertos_init();
+    lvgl_init();    // LVGL初始化
+
+    freertos_init();    // FreeRTOS初始化
+}
+
+/**
+ * @brief 主循环
+*/
+void loop() 
+{
+    //LED_root();
+    DNS_request_loop(); // DNS服务请求处理
+}
+
+// ==================== LVGL 相关 ==================== 
+
+void lvgl_init()
+{
+    log_now("[INFO] 开始初始化LVGL...");
 
     lv_init();    // 初始化LVGL
 
-    lv_disp_draw_buf_init( &draw_buf, buf, NULL, screenWidth * 10 );
+    lv_disp_draw_buf_init( &draw_buf, buf, NULL, LVGL_BUF_SIZE );
 
     /*Initialize the display*/
-    static lv_disp_t disp;
 
-    static lv_disp_drv_t *disp_drv = disp.driver;
+    static lv_disp_drv_t *disp_drv;
+    disp_drv = (lv_disp_drv_t *)malloc(sizeof(lv_disp_drv_t));
     lv_disp_drv_init(disp_drv);
     /*Change the following line to your display resolution*/
     disp_drv->hor_res = screenWidth;
@@ -61,26 +80,7 @@ void setup()
     indev_drv.type = LV_INDEV_TYPE_KEYPAD;
     indev_drv.read_cb = my_touchpad_read;
     lv_indev_drv_register( &indev_drv );
-
-    // uncomment one of these demos 取消注释这些演示之一
-    lv_demo_widgets();            // OK
-    // lv_demo_benchmark();          // OK
-    // lv_demo_keypad_encoder();     // works, but I haven't an encoder
-    // lv_demo_music();              // NOK
-    // lv_demo_printer();
-    // lv_demo_stress();             // seems to be OK
 }
-
-/**
- * @brief 主循环
-*/
-void loop() 
-{
-    //LED_root();
-    DNS_request_loop(); // DNS服务请求处理
-}
-
-// ==================== LVGL 相关 ==================== 
 
 void my_disp_flush( _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p )
 {
@@ -132,34 +132,10 @@ void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data )
 */
 void freertos_init()
 {
-    xTaskCreate(
-            freertos_task1,          /*任务函数*/
-            "TaskOne",        /*带任务名称的字符串*/
-            10000,            /*堆栈大小，单位为字节*/
-            NULL,             /*作为任务输入传递的参数*/
-            1,                /*任务的优先级*/
-            NULL);            /*任务句柄*/
-    xTaskCreate(
-            freertos_task2,          /* Task function. */
-            "TaskTwo",        /* String with name of task. */
-            10000,            /* Stack size in bytes. */
-            NULL,             /* Parameter passed as input of the task */
-            2,                /* Priority of the task. */
-            NULL);            /* Task handle. */
-    xTaskCreate(
-            freertos_task3,          /* Task function. */
-            "taskThree",        /* String with name of task. */
-            10000,            /* Stack size in bytes. */
-            NULL,             /* Parameter passed as input of the task */
-            2,                /* Priority of the task. */
-            NULL);            /* Task handle. */
-    xTaskCreate(
-            freertos_task4,          /* Task function. */
-            "taskFour",        /* String with name of task. */
-            10000,            /* Stack size in bytes. */
-            NULL,             /* Parameter passed as input of the task */
-            2,                /* Priority of the task. */
-            NULL);            /* Task handle. */
+    xTaskCreatePinnedToCore(freertos_task1, "Task1", (6*1024), NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(freertos_task2, "Task2", (4*1024), NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(freertos_task3, "Task3", (4*1024), NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore(freertos_task4, "Task4", (4*1024), NULL, 1, NULL, 1);
 }
 
 /**
@@ -171,7 +147,10 @@ void freertos_task1(void *pvParameters)
 {
     while(1)
     {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        log_now("[INFO] Task1 running");
+
+        lv_timer_handler();    // LVGL定时器处理
+        delayNoBlock_ms(5);
     }
     log_now("[INFO] Ending Task1");
     vTaskDelete(NULL);
@@ -186,7 +165,9 @@ void freertos_task2(void *pvParameters)
 {
     while(1)
     {
-        demo_show_cube();
+        log_now("[INFO] Task2 running");
+
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
     log_now("[INFO] Ending Task2");
     vTaskDelete(NULL);
@@ -201,14 +182,13 @@ void freertos_task3(void *pvParameters)
 {
     while(1)
     {
-        str_lcd = "Temp: " + String(dht11_getTemp()) + "°C";
-        lcd_show_string(10, 10, 200, 32, LCD_FONT_32, (char*)(str_lcd.c_str()), RED);
+        log_now("[INFO] Task3 running");
 
-        str_lcd = "Humi: " + String(dht11_getHumi()) + "%";
-        lcd_show_string(10, 42, 200, 32, LCD_FONT_32, (char*)(str_lcd.c_str()), RED);
+        //str_lcd = "Temp: " + String(dht11_getTemp()) + "°C";
+        //lcd_show_string(10, 10, 200, 32, LCD_FONT_32, (char*)(str_lcd.c_str()), RED);
 
-        str_uart = "[INFO] Temp: " + String(dht11_getTemp()) + "°C Humi: " + String(dht11_getHumi()) + "%";
-        log_now(str_uart);
+        //str_lcd = "Humi: " + String(dht11_getHumi()) + "%";
+        //lcd_show_string(10, 42, 200, 32, LCD_FONT_32, (char*)(str_lcd.c_str()), RED);
     }
     log_now("[INFO] Ending Task3");
     vTaskDelete(NULL);
@@ -223,7 +203,12 @@ void freertos_task4(void *pvParameters)
 {
     while(1)
     {
+        log_now("[INFO] Task4 running");
+
         dht11_getData();
+
+        str_uart = "[INFO] Temp: " + String(dht11_getTemp()) + "°C Humi: " + String(dht11_getHumi()) + "%";
+        log_now(str_uart);
     }
     log_now("[INFO] Ending Task4");
     vTaskDelete(NULL);
