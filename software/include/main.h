@@ -25,8 +25,10 @@
 
 #define LVGL_BUF_SIZE (screenWidth * screenHeight) / 10
 
-#define CS_PIN 35
-
+#define TS_SDO_PIN 4
+#define TS_SDI_PIN 6
+#define TS_CS_PIN 15
+#define TS_CLK_PIN 17
 
 // ==================== global variables ====================
 
@@ -43,9 +45,11 @@ void loop();
 // void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 
 void freertos_init();
-void freertos_task1(void *pvParameters);
-void freertos_task2(void *pvParameters);
-void freertos_task3(void *pvParameters);
-void freertos_task4(void *pvParameters);
+
+void task_feed(void *pvParameters);
+void task_lvgl(void *pvParameters);
+void task_dht11_getData(void *pvParameters);
+void task_lcd_show(void *pvParameters);
+void task_ts_getData(void *pvParameters);
 
 #endif    // __MAIN_H

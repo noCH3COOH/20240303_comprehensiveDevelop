@@ -14,7 +14,7 @@ uint16_t ts_nowPoint_y = 0;
 //static const uint16_t screenHeight = 240;
 
 TFT_eSPI tft = TFT_eSPI(TFT_WIDTH, TFT_HEIGHT);
-XPT2046_Touchscreen ts(CS_PIN);
+XPT2046_Touchscreen ts(TS_CS_PIN);
 
 // static lv_disp_draw_buf_t draw_buf;
 // static lv_color_t buf[ LVGL_BUF_SIZE ];
@@ -45,19 +45,23 @@ void setup()
     //lcd_init();             /* LCD初始化 */
     tft.init();
     tft.setRotation(1);
-    for(int i = 0; i < 16; i++)
-    {
-        tft.fillScreen(default_4bit_palette[i]);
-        delayNoBlock_ms(500);
-    }
+    tft.fillScreen(TFT_DARKGREY);
 
     tft.setCursor(10, 10);
     tft.setTextSize(2);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     // lvgl_init();    // LVGL初始化
 
-    ts.begin(SPI2);    // 触摸屏初始化
-    ts.setRotation(1);
+    short retry = 0;
+    while(retry < 3 && (!ts.begin(TS_CLK_PIN, TS_SDI_PIN, TS_SDO_PIN)))
+    {
+        retry += 1;
+        log_now("[ERROR] 触摸屏初始化失败，重试" + String(retry) + "次...");
+    }
+    if(retry < 3)
+        ts.setRotation(1);
+    else
+        log_now("[ERROR] 触摸屏初始化彻底失败");
 
     freertos_init();    // FreeRTOS初始化
 }
@@ -151,44 +155,39 @@ void loop()
 */
 void freertos_init()
 {
-    xTaskCreatePinnedToCore(freertos_task1, "Task1", (6*1024), NULL, 2, NULL, 0);
-    xTaskCreatePinnedToCore(freertos_task2, "Task2", (4*1024), NULL, 2, NULL, 1);
-    xTaskCreatePinnedToCore(freertos_task3, "Task3", (4*1024), NULL, 1, NULL, 1);
-    xTaskCreatePinnedToCore(freertos_task4, "Task4", (4*1024), NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore(task_feed, "task_feed", (1*1024), NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(task_lvgl, "task_lvgl", (6*1024), NULL, 1, NULL, 0);
+    xTaskCreatePinnedToCore(task_dht11_getData, "task_dht11_getData", (4*1024), NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(task_lcd_show, "task_lcd_show", (4*1024), NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore(task_ts_getData, "task_ts_getData", (4*1024), NULL, 1, NULL, 1);
 }
 
 /**
- * @brief FreeRTOS任务1
+ * @brief 喂狗任务
  * @param pvParameters 任务参数
- * @note 任务1，喂狗任务
 */
-void freertos_task1(void *pvParameters)
+void task_feed(void *pvParameters)
 {
     while(1)
     {
-        log_now("[INFO] Task1 running");
-
-        // lv_timer_handler();    // LVGL定时器处理
-        delayNoBlock_ms(5);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
-    log_now("[INFO] Ending Task1");
+    log_now("[INFO] Ending task_feed");
     vTaskDelete(NULL);
 }
 
 /**
- * @brief FreeRTOS任务2
+ * @brief LVGL FreeRTOS任务
  * @param pvParameters 任务参数
- * @note 任务2，喂狗任务
 */
-void freertos_task2(void *pvParameters)
+void task_lvgl(void *pvParameters)
 {
     while(1)
     {
-        log_now("[INFO] Task2 running");
-
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        // lv_timer_handler();    // LVGL定时器处理
+        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
-    log_now("[INFO] Ending Task2");
+    log_now("[INFO] Ending task_lvgl");
     vTaskDelete(NULL);
 }
 
@@ -197,11 +196,31 @@ void freertos_task2(void *pvParameters)
  * @param pvParameters 任务参数
  * @note 任务3，显示温湿度任务
 */
-void freertos_task3(void *pvParameters)
+void task_dht11_getData(void *pvParameters)
 {
     while(1)
     {
-        log_now("[INFO] Task3 running");
+        // log_now("[INFO] task_dht11_getData running");
+
+        dht11_getData();
+
+        str_uart = "[INFO] Temp: " + String(dht11_getTemp()) + "°C Humi: " + String(dht11_getHumi()) + "%";
+        log_now(str_uart);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+    log_now("[INFO] Ending task_dht11_getData");
+    vTaskDelete(NULL);
+}
+
+/**
+ * @brief LCD 显示任务
+ * @param pvParameters 任务参数
+*/
+void task_lcd_show(void *pvParameters)
+{
+    while(1)
+    {
+        // log_now("[INFO] Task4 running");
 
         str_lcd = "[INFO] Temp: " + String(dht11_getTemp()) + "°C";
         tft.drawString(str_lcd, 10, 10);
@@ -209,52 +228,33 @@ void freertos_task3(void *pvParameters)
         str_lcd = "[INFO] Humi: " + String(dht11_getHumi()) + "%";
         tft.drawString(str_lcd, 10, 42);
 
-        str_lcd = "[INFO] now point in: (" + String(ts_nowPoint_x) + ", " + String(ts_nowPoint_y) + ")";
+        str_lcd = "[INFO] touch: (" + String(ts_nowPoint_x) + ", " + String(ts_nowPoint_y) + ")";
         tft.drawString(str_lcd, 10, 74);
     }
-    log_now("[INFO] Ending Task3");
+    log_now("[INFO] Ending task_lcd_show");
     vTaskDelete(NULL);
 }
 
 /**
- * @brief FreeRTOS任务4
+ * @brief 触摸屏数据获取任务
  * @param pvParameters 任务参数
- * @note 任务4，获取温湿度
 */
-void freertos_task4(void *pvParameters)
+void task_ts_getData(void *pvParameters)
 {
     while(1)
     {
-        log_now("[INFO] Task4 running");
-
-        dht11_getData();
-
-        str_uart = "[INFO] Temp: " + String(dht11_getTemp()) + "°C Humi: " + String(dht11_getHumi()) + "%";
-        log_now(str_uart);
-    }
-    log_now("[INFO] Ending Task4");
-    vTaskDelete(NULL);
-}
-
-/**
- * @brief FreeRTOS任务4
- * @param pvParameters 任务参数
- * @note 任务4，获取温湿度
-*/
-void freertos_task5(void *pvParameters)
-{
-    while(1)
-    {
-        log_now("[INFO] Task5 running");
+        // log_now("[INFO] task_ts_getData running");
 
         TS_Point ts_p = ts.getPoint();
-        ts_nowPoint_x = ts_p.x;
         ts_nowPoint_y = ts_p.y;
+        ts_nowPoint_x = ts_p.x;
 
         str_uart = "[INFO] touch: (" + String(ts_nowPoint_x) + ", " + String(ts_nowPoint_y) + ")";
         log_now(str_uart);
+
+        vTaskDelay(50 / portTICK_PERIOD_MS);
     }
-    log_now("[INFO] Ending Task5");
+    log_now("[INFO] Ending task_ts_getData");
     vTaskDelete(NULL);
 }
 
