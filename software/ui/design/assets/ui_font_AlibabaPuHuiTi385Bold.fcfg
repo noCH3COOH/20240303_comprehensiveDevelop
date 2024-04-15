@@ -1,0 +1,16 @@
+{
+  "codename": "AlibabaPuHuiTi385Bold",
+  "ttf_path": "\\assets\\AlibabaPuHuiTi-3-85-Bold.ttf",
+  "bin_path": "\\assets\\ui_font_AlibabaPuHuiTi385Bold.bin",
+  "c_path": "\\assets\\ui_font_AlibabaPuHuiTi385Bold.c",
+  "cfg_path": "\\assets\\ui_font_AlibabaPuHuiTi385Bold.fcfg",
+  "size": 16,
+  "bpp": 4,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "配网按钮\n未连接本产品由西安电子科技大学年课程\n综合开发实验第小组开发完成温度亮度湿度参数设置关于",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

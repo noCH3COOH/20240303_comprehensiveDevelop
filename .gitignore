@@ -1,2 +1,13 @@
 .*
 requirements.txt
+software/ui/design/assets/font/
+
+software/ui/design/autosave/
+
+software/ui/design/assets/AlibabaPuHuiTi-3-105-Heavy.ttf
+
+*.ttf
+
+software/ui/design/boards/
+
+software/ui/design/backup/
