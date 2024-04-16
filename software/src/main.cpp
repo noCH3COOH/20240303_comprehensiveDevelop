@@ -15,6 +15,8 @@ TFT_eSPI tft = TFT_eSPI(TFT_WIDTH, TFT_HEIGHT);
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf[ LVGL_BUF_SIZE ];
 
+uint32_t frame_time = 0;
+
 // ==================== 业务 ====================
 
 /**
@@ -45,6 +47,12 @@ void setup()
         tft.setCursor(10, 10);
         tft.setTextSize(2);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
+
+        for(int i=0; i<16; i++)
+        {
+            tft.fillScreen(default_4bit_palette[i]);
+            delayNoBlock_ms(300);
+        }
     }
     log_now("[SUCCESS] LCD初始化完成");
 
@@ -55,8 +63,13 @@ void setup()
     }
     log_now("[SUCCESS] 触摸屏初始化成功");
 
-    lvgl_init();
-    lv_demo_widgets();
+    log_now("[INFO] 初始化LVGL...");
+    {
+        lvgl_init();
+        ui_init();
+        lv_obj_add_event_cb(ui_fresh_Label, ui_event_freshLabel, LV_EVENT_REFRESH, NULL);
+    }
+    log_now("[SUCCESS] LVGL初始化完成");
 
     freertos_init();    // FreeRTOS初始化
     log_now("[INFO] 初始化完成，开始任务调度");
@@ -75,8 +88,6 @@ void loop()
 
 void lvgl_init()
 {
-    log_now("[INFO] 开始初始化LVGL...");
-
     lv_init(); // 初始化LVGL
 
     lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_BUF_SIZE);
@@ -131,6 +142,19 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     }
 }
 
+
+void ui_event_freshLabel(lv_event_t * e)
+{
+    lv_label_set_text(ui_tempLabel, (String(dht11_getTemp()) + "°C").c_str());
+    //lv_label_set_text(ui_brightLabel, (String(led.get_pwm_duty()) + "%").c_str());
+    lv_label_set_text(ui_wetLabel, (String(dht11_getHumi()) + "%").c_str());
+    lv_label_set_text(ui_bombLabel, (String(led.get_pwm_duty().data) + "%").c_str());
+    //lv_label_set_text(ui_fanLabel, "0%");
+    lv_label_set_text(ui_wifiLabel, (global_config.wifiname).c_str());
+    lv_label_set_text(ui_ipLabel, (global_config.ip).c_str());
+    //lv_label_set_text(ui_hotpotLabel, (global_config.hotpotname).c_str());
+}
+
 // ==================== freertos 相关 ==================== 
 
 /**
@@ -138,10 +162,10 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 */
 void freertos_init()
 {
-    xTaskCreatePinnedToCore(task_feed, "task_feed", (1*1024), NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(task_feed, "task_feed1", (1*1024), NULL, 2, NULL, 0);
     xTaskCreatePinnedToCore(task_lvgl, "task_lvgl", (6*1024), NULL, 1, NULL, 0);
+    xTaskCreatePinnedToCore(task_feed, "task_feed2", (1*1024), NULL, 2, NULL, 1);
     xTaskCreatePinnedToCore(task_dht11_getData, "task_dht11_getData", (4*1024), NULL, 2, NULL, 1);
-    xTaskCreatePinnedToCore(task_lcd_show, "task_lcd_show", (4*1024), NULL, 1, NULL, 1);
 }
 
 /**
@@ -168,6 +192,13 @@ void task_lvgl(void *pvParameters)
     {
         lv_timer_handler();    // LVGL定时器处理
         vTaskDelay(5 / portTICK_PERIOD_MS);
+
+        lv_event_send(ui_fresh_Label, LV_EVENT_REFRESH, NULL);
+
+        frame_time = lv_tick_elaps(frame_time);
+        tft.drawString(("FPS: " + String(1000 / frame_time)).c_str(), 10, 10, 2);
+
+        frame_time = lv_tick_get();
     }
     log_now("[INFO] Ending task_lvgl");
     vTaskDelete(NULL);
@@ -191,30 +222,5 @@ void task_dht11_getData(void *pvParameters)
         vTaskDelay(500 / portTICK_PERIOD_MS);
     }
     log_now("[INFO] Ending task_dht11_getData");
-    vTaskDelete(NULL);
-}
-
-/**
- * @brief LCD 显示任务
- * @param pvParameters 任务参数
-*/
-void task_lcd_show(void *pvParameters)
-{
-    while(1)
-    {
-        // log_now("[INFO] Task4 running");
-
-        // str_lcd = "[INFO] Temp: " + String(dht11_getTemp()) + "°C";
-        // tft.drawString(str_lcd, 10, 10);
-
-        // str_lcd = "[INFO] Humi: " + String(dht11_getHumi()) + "%";
-        // tft.drawString(str_lcd, 10, 42);
-
-        // str_lcd = "[INFO] touch: (" + String(ts_nowPoint_x) + ", " + String(ts_nowPoint_y) + ")";
-        // tft.drawString(str_lcd, 10, 74);
-
-        vTaskDelay(10 / portTICK_PERIOD_MS);
-    }
-    log_now("[INFO] Ending task_lcd_show");
     vTaskDelete(NULL);
 }

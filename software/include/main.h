@@ -22,7 +22,7 @@
 #include "xpt2046.h"
 
 #include "lvgl.h"
-#include "lv_demo.h"
+#include "ui.h"
 
 // ==================== defines ====================
 
@@ -46,12 +46,12 @@ void loop();
 void lvgl_init();
 void my_disp_flush( _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
 void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
+void ui_event_freshLabel(lv_event_t * e);
 
 void freertos_init();
 
 void task_feed(void *pvParameters);
 void task_lvgl(void *pvParameters);
 void task_dht11_getData(void *pvParameters);
-void task_lcd_show(void *pvParameters);
 
 #endif    // __MAIN_H

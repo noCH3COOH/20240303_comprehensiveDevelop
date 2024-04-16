@@ -127,7 +127,7 @@ bool XPT2046_readXY(void)
             xpt2046_touch.y = LCD_WIDTH - x;
         }
 
-        log_now("[INFO] 像素坐标: (" + String(xpt2046_touch.x) + ", " + String(xpt2046_touch.y) + ")");
+        // log_now("[INFO] 像素坐标: (" + String(xpt2046_touch.x) + ", " + String(xpt2046_touch.y) + ")");
 
         digitalWrite(IRQ_PIN, HIGH);    // 释放触摸屏(必须释放,否则下次无法读取坐标)
         
