@@ -194,11 +194,6 @@ void task_lvgl(void *pvParameters)
         vTaskDelay(5 / portTICK_PERIOD_MS);
 
         lv_event_send(ui_fresh_Label, LV_EVENT_REFRESH, NULL);
-
-        frame_time = lv_tick_elaps(frame_time);
-        tft.drawString(("FPS: " + String(1000 / frame_time)).c_str(), 10, 10, 2);
-
-        frame_time = lv_tick_get();
     }
     log_now("[INFO] Ending task_lvgl");
     vTaskDelete(NULL);
