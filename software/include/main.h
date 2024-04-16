@@ -15,7 +15,6 @@
 #include "gpio.h"
 #include "dht11.h"
 #include "file_system.h"
-#include "net_connect.h"
 #include "web_server.h"
 
 #include "TFT_eSPI.h"
