@@ -69,3 +69,31 @@ function post_request(ElementId, path)
     xmlhttp.open("POST", path, true);
     xmlhttp.send(data);
 }
+
+/**
+ * @brief:	向path发送POST请求，并通过后台send()方法发送
+ * @param:	ElementId 要得到数据的元素ID
+ * @param:	path 请求的路径
+ */
+function wifi_post_request(path) 
+{
+    var xmlhttp = new XMLHttpRequest();
+    var data = new FormData();
+    data.append('auth_user', document.getElementById('auth_user').value);
+    data.append('auth_pass', document.getElementById('auth_pass').value);
+
+    xmlhttp.onreadystatechange = function () 
+    {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+        {
+            // 处理服务器响应
+            if (xmlhttp.responseText == "OK") 
+            {
+                alert('操作已完成！');
+            }
+        }
+    };
+
+    xmlhttp.open("POST", path, true);
+    xmlhttp.send(data);
+}

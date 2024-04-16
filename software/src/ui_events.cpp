@@ -5,6 +5,7 @@
 
 #include "ui.h"
 #include "gpio.h"
+#include "web_server.h"
 
 void LVGL_set_temp(lv_event_t * e)
 {
@@ -21,4 +22,6 @@ void LVGL_set_bright(lv_event_t * e)
 void LVGL_set_net(lv_event_t * e)
 {
 	// Your code here
+
+	lv_label_set_text(ui_hotpotLabel, set_net_AP().c_str());
 }

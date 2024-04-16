@@ -18,8 +18,6 @@ struct CONFIG
     String ip;
     String AP_ip;
     const String AP_ssid;
-    const String AP_password;
-    const String AP_url;
 };
 
 // ==================== global variables ====================
