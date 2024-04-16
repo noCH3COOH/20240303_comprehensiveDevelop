@@ -4,7 +4,6 @@
 
 // =========================== global variables ===========================
 
-AsyncWebServer server(80);    // 创建一个服务器对象，WEB服务器端口:80
 DNSServer dnsserver;    // 创建一个DNS服务器对象
 
 // =========================== functions ===========================
@@ -17,18 +16,17 @@ DNSServer dnsserver;    // 创建一个DNS服务器对象
 void connect_WIFI(String ssid, String password)
 {
     WiFi.begin(ssid.c_str(), password.c_str());    // 连接WIFI
-    log_now("[INFO] 连接WIFI");
-    
-    // 循环，10秒后连接不上跳出循环
+    log_now("[INFO] 连接WIFI: " + String(ssid.c_str()));
+
     int i = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
         log_now_noNewline(".");
-        log_now("");
-        delayNoBlock_ms(500);
+        delayNoBlock_ms(1000);
         i++;
-        if (i > 20)
+        if (i > 5)
         {
+            log_now("");
             log_now("[ERROR] WIFI连接失败");
             return;
         }

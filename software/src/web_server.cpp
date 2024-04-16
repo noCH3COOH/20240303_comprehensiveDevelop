@@ -2,6 +2,10 @@
 
 #include "web_server.h"
 
+// =========================== global variables ===========================
+
+static AsyncWebServer server(80);    // 创建一个服务器对象，WEB服务器端口:80
+
 // =========================== functions ===========================
 
 /**

@@ -2,3 +2,6 @@ software/.pio/build
 software/.pio/libdeps
 software/.vscode
 requirements.txt
+*.ttf
+software/ui/design/boards/
+software/ui/design/backup/

@@ -14,7 +14,6 @@
 
 // =========================== global variables ===========================
 
-extern AsyncWebServer server;
 extern DNSServer dnsserver;
 
 // =========================== functions ===========================
