@@ -15,6 +15,8 @@ const byte DNS_port = 53;    // DNS端口
 String scanNetworksID = "";
 String netSet_page = "";
 
+bool isAP = false;    // 是否为AP模式
+
 // =========================== functions ===========================
 
 /**
@@ -22,6 +24,8 @@ String netSet_page = "";
 */
 void init_webServer()
 {
+    server.reset();    // 重置服务器
+
     log_now("[INFO] 初始化WEB服务器");
     
     // 响应网站根目录的GET请求,返回文件index.html
@@ -54,10 +58,6 @@ void init_network()
     String wifipassword = analysis_json(str, "wifipassword");    // 解析WIFI密码
 
     connect_WIFI(wifiname, wifipassword);    // 连接WIFI
-
-    global_config.wifiname = wifiname;    // 设置WIFI名称
-    global_config.wifipassword = wifipassword;    // 设置WIFI密码
-    global_config.ip = WiFi.localIP().toString();    // 获取WIFI模式IP地址
 
     update_config();    // 更新配置文件
 }
@@ -92,6 +92,10 @@ void connect_WIFI(String ssid, String password)
     log_now(ssid.c_str());
     log_now_noNewline("[INFO] 本地IP地址:");
     log_now(WiFi.localIP().toString());
+
+    global_config.wifiname = ssid;    // 设置WIFI名称
+    global_config.wifipassword = password;    // 设置WIFI密码
+    global_config.ip = WiFi.localIP().toString();    // 获取WIFI模式IP地址
 }
 
 /**
@@ -99,6 +103,8 @@ void connect_WIFI(String ssid, String password)
 */
 String set_net_AP()
 {
+    isAP = true;    // 设置为AP模式
+
     if(WiFi.status() == WL_CONNECTED)    // 如果已经连接WIFI
     {
         WiFi.disconnect();    // 断开WIFI连接
@@ -185,6 +191,8 @@ void postCallback_setWIFI_AP(AsyncWebServerRequest *request)
 
     if (request->hasParam("auth_user", true) && request->hasParam("auth_pass", true))
     {
+        request->send(200, "text/plain", "OK");
+
         AsyncWebParameter *auth_user = request->getParam("auth_user", true);    // 获取POST数据
         AsyncWebParameter *auth_pass = request->getParam("auth_pass", true);    // 获取POST数据
 
@@ -197,6 +205,9 @@ void postCallback_setWIFI_AP(AsyncWebServerRequest *request)
     }
 
     connect_WIFI(global_config.wifiname, global_config.wifipassword);    // 连接WIFI
+    init_webServer();    // 初始化WEB服务器
+    
+    isAP = false;    // 设置为非AP模式
 }
 
 /**
@@ -208,6 +219,8 @@ void postCallback_setWIFI(AsyncWebServerRequest *request)
     log_now("[INFO] 收到设置WIFI按钮");
     if (request->hasParam("wifiname", true))
     {
+        request->send(200, "text/plain", "OK");
+
         AsyncWebParameter *wifiname = request->getParam("wifiname", true);    // 获取POST数据
         AsyncWebParameter *wifipassword = request->getParam("wifipassword", true);    // 获取POST数据
         

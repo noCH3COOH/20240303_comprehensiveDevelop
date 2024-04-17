@@ -18,6 +18,7 @@
 // =========================== global variables ===========================
 
 extern DNSServer dnsserver;
+extern bool isAP;
 
 // =========================== functions ===========================
 
