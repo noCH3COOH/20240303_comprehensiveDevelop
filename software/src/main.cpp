@@ -30,8 +30,8 @@ void setup()
     log_now("[INFO] PSRAM 空闲大小：" + String(heap_caps_get_free_size(MALLOC_CAP_SPIRAM)));
     
     LittleFS_begin();   // LittleFS文件系统初始化
-    connect_NET();      // 网络初始化
-    web_server();       // WEB服务器初始化
+    init_network();      // 网络初始化
+    init_webServer();       // WEB服务器初始化
 
     log_now(dht11_init() ? "[SUCCESS] 温度计初始化完成" : "[ERROR] 温度计初始化失败");    // 温湿度传感器初始化
 
@@ -155,7 +155,9 @@ void ui_event_freshLabel(lv_event_t * e)
     //lv_label_set_text(ui_fanLabel, "0%");
     lv_label_set_text(ui_wifiLabel, (global_config.wifiname).c_str());
     lv_label_set_text(ui_ipLabel, (global_config.ip).c_str());
-    //lv_label_set_text(ui_hotpotLabel, (global_config.hotpotname).c_str());
+    
+    if(!isAP)
+        lv_label_set_text(ui_hotpotLabel, "未配网");
 }
 
 // ==================== freertos 相关 ==================== 

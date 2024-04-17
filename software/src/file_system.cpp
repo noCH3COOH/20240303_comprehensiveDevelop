@@ -9,9 +9,7 @@ struct CONFIG global_config = {
     "", 
     "", 
     "", 
-    "esp32_AP", 
-    "12345678", 
-    "ESPAP.com", 
+    "esp32_AP"
 };
 
 // ==================== functions ====================
@@ -106,8 +104,6 @@ void update_config()
     config["ip"] = global_config.ip.c_str();
     config["AP_ip"] = global_config.AP_ip.c_str();
     config["AP_ssid"] = global_config.AP_ssid.c_str();
-    config["AP_password"] = global_config.AP_password.c_str();
-    config["AP_url"] = global_config.AP_url.c_str();
         
     serializeJson(config, str_config);    // 生成JOSN的字符串
     while( (retry < 3) && (!str2file("/config.json", str_config)) )

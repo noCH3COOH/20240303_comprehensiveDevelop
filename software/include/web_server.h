@@ -18,15 +18,25 @@
 // =========================== global variables ===========================
 
 extern DNSServer dnsserver;
+extern bool isAP;
 
 // =========================== functions ===========================
 
-void web_server();
-void connect_NET();
+void init_webServer();
+void init_network();
+
 void connect_WIFI(String ssid, String password);
 
-void DNS_request_loop();
+String set_net_AP();
 
+bool scan_wifi();
+
+void DNS_request_loop();
+void dnsCallback_APnetSet();
+
+void callback_APnetSet(AsyncWebServerRequest *request);
+
+void postCallback_setWIFI_AP(AsyncWebServerRequest *request);
 void postCallback_setWIFI(AsyncWebServerRequest *request);
 
 void getCallback_readWIFI(AsyncWebServerRequest *request);
