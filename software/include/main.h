@@ -10,8 +10,6 @@
 #include "log.h"
 #include "delayNoBlock.h"
 
-#include "xl9555.h"
-
 #include "gpio.h"
 #include "dht11.h"
 #include "file_system.h"
