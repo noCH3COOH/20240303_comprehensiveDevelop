@@ -21,6 +21,8 @@
 #include "lvgl.h"
 #include "ui.h"
 
+#include "game.h"
+
 // ==================== defines ====================
 
 #define LVGL_BUF_SIZE (screenWidth * screenHeight) / 10
@@ -49,6 +51,7 @@ void freertos_init();
 
 void task_feed(void *pvParameters);
 void task_lvgl(void *pvParameters);
+void task_game(void *pvParameters);
 void task_dht11_getData(void *pvParameters);
 
 #endif    // __MAIN_H

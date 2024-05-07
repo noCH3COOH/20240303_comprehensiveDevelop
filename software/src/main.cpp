@@ -51,11 +51,11 @@ void setup()
         tft.setTextSize(2);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
-        for(int i=0; i<16; i++)
-        {
-            tft.fillScreen(default_4bit_palette[i]);
-            delayNoBlock_ms(300);
-        }
+        // for(int i=0; i<16; i++)
+        // {
+        //     tft.fillScreen(default_4bit_palette[i]);
+        //     delayNoBlock_ms(300);
+        // }
     }
     log_now("[SUCCESS] LCD初始化完成");
 
@@ -74,6 +74,8 @@ void setup()
     }
     log_now("[SUCCESS] LVGL初始化完成");
 
+    game_init();    // 游戏初始化
+
     freertos_init();    // FreeRTOS初始化
     log_now("[INFO] 初始化完成，开始任务调度");
 }
@@ -84,7 +86,9 @@ void setup()
 void loop()
 {
     // LED_root();
-    DNS_request_loop(); // DNS服务请求处理
+    // DNS_request_loop(); // DNS服务请求处理
+
+    // game_loop();
 }
 
 // ==================== LVGL 相关 ====================
@@ -170,6 +174,7 @@ void freertos_init()
     xTaskCreatePinnedToCore(task_feed, "task_feed1", (1*1024), NULL, 2, NULL, 0);
     xTaskCreatePinnedToCore(task_lvgl, "task_lvgl", (6*1024), NULL, 1, NULL, 0);
     xTaskCreatePinnedToCore(task_feed, "task_feed2", (1*1024), NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(task_game, "task_game", (2*1024), NULL, 1, NULL, 1);
     xTaskCreatePinnedToCore(task_dht11_getData, "task_dht11_getData", (4*1024), NULL, 2, NULL, 1);
 }
 
@@ -181,7 +186,7 @@ void task_feed(void *pvParameters)
 {
     while(1)
     {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
     log_now("[INFO] Ending task_feed");
     vTaskDelete(NULL);
@@ -201,6 +206,16 @@ void task_lvgl(void *pvParameters)
         lv_event_send(ui_fresh_Label, LV_EVENT_REFRESH, NULL);
     }
     log_now("[INFO] Ending task_lvgl");
+    vTaskDelete(NULL);
+}
+
+void task_game(void *pvParameters)
+{
+    while(1)
+    {
+        game_loop();
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
     vTaskDelete(NULL);
 }
 
