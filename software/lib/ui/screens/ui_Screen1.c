@@ -3,7 +3,7 @@
 // LVGL version: 8.3.6
 // Project name: SquareLine_Project
 
- #include "ui.h"
+#include "ui.h"
 
 void ui_Screen1_screen_init(void)
 {
@@ -263,7 +263,7 @@ void ui_Screen1_screen_init(void)
     ui_Label2 = lv_label_create(ui_tempSetPanel);
     lv_obj_set_width(ui_Label2, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label2, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label2, lv_pct(-42));
+    lv_obj_set_x(ui_Label2, lv_pct(-35));
     lv_obj_set_y(ui_Label2, lv_pct(0));
     lv_obj_set_align(ui_Label2, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label2, "温度：30%");
@@ -274,8 +274,8 @@ void ui_Screen1_screen_init(void)
     if(lv_slider_get_mode(ui_tempSetSlider) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_tempSetSlider, 0,
                                                                                                   LV_ANIM_OFF);
     lv_obj_set_height(ui_tempSetSlider, 10);
-    lv_obj_set_width(ui_tempSetSlider, lv_pct(75));
-    lv_obj_set_x(ui_tempSetSlider, lv_pct(10));
+    lv_obj_set_width(ui_tempSetSlider, lv_pct(65));
+    lv_obj_set_x(ui_tempSetSlider, lv_pct(15));
     lv_obj_set_y(ui_tempSetSlider, lv_pct(0));
     lv_obj_set_align(ui_tempSetSlider, LV_ALIGN_CENTER);
 
@@ -304,7 +304,7 @@ void ui_Screen1_screen_init(void)
     ui_Label3 = lv_label_create(ui_brightSetPanel);
     lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label3, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label3, lv_pct(-42));
+    lv_obj_set_x(ui_Label3, lv_pct(-35));
     lv_obj_set_y(ui_Label3, lv_pct(0));
     lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label3, "亮度：30%");
@@ -315,8 +315,8 @@ void ui_Screen1_screen_init(void)
     if(lv_slider_get_mode(ui_brightSetSlider) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_brightSetSlider, 0,
                                                                                                     LV_ANIM_OFF);
     lv_obj_set_height(ui_brightSetSlider, 10);
-    lv_obj_set_width(ui_brightSetSlider, lv_pct(75));
-    lv_obj_set_x(ui_brightSetSlider, lv_pct(10));
+    lv_obj_set_width(ui_brightSetSlider, lv_pct(65));
+    lv_obj_set_x(ui_brightSetSlider, lv_pct(15));
     lv_obj_set_y(ui_brightSetSlider, lv_pct(0));
     lv_obj_set_align(ui_brightSetSlider, LV_ALIGN_CENTER);
 
@@ -337,13 +337,15 @@ void ui_Screen1_screen_init(void)
     ui_netSetPanel = lv_obj_create(ui_settingPage);
     lv_obj_set_width(ui_netSetPanel, lv_pct(100));
     lv_obj_set_height(ui_netSetPanel, lv_pct(15));
+    lv_obj_set_x(ui_netSetPanel, lv_pct(0));
+    lv_obj_set_y(ui_netSetPanel, lv_pct(20));
     lv_obj_set_align(ui_netSetPanel, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_netSetPanel, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Label6 = lv_label_create(ui_netSetPanel);
     lv_obj_set_width(ui_Label6, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label6, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label6, lv_pct(-42));
+    lv_obj_set_x(ui_Label6, lv_pct(-35));
     lv_obj_set_y(ui_Label6, lv_pct(0));
     lv_obj_set_align(ui_Label6, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label6, "配网按钮");
@@ -360,6 +362,45 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_bg_grad_color(ui_netSetBotton, lv_color_hex(0x222191), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_netSetBotton, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_fanSetPanel = lv_obj_create(ui_settingPage);
+    lv_obj_set_width(ui_fanSetPanel, lv_pct(100));
+    lv_obj_set_height(ui_fanSetPanel, lv_pct(15));
+    lv_obj_set_align(ui_fanSetPanel, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_fanSetPanel, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_Label4 = lv_label_create(ui_fanSetPanel);
+    lv_obj_set_width(ui_Label4, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label4, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label4, lv_pct(-35));
+    lv_obj_set_y(ui_Label4, lv_pct(0));
+    lv_obj_set_align(ui_Label4, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label4, "风扇效率：30%");
+    lv_obj_set_style_text_font(ui_Label4, &ui_font_AlibabaPuHuiTi385Bold, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_fanSetSlider = lv_slider_create(ui_fanSetPanel);
+    lv_slider_set_value(ui_fanSetSlider, 30, LV_ANIM_OFF);
+    if(lv_slider_get_mode(ui_fanSetSlider) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_fanSetSlider, 0,
+                                                                                                 LV_ANIM_OFF);
+    lv_obj_set_height(ui_fanSetSlider, 10);
+    lv_obj_set_width(ui_fanSetSlider, lv_pct(65));
+    lv_obj_set_x(ui_fanSetSlider, lv_pct(15));
+    lv_obj_set_y(ui_fanSetSlider, lv_pct(0));
+    lv_obj_set_align(ui_fanSetSlider, LV_ALIGN_CENTER);
+
+    lv_obj_set_style_bg_color(ui_fanSetSlider, lv_color_hex(0x206DF0), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_fanSetSlider, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_color(ui_fanSetSlider, lv_color_hex(0xE119FF), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(ui_fanSetSlider, LV_GRAD_DIR_HOR, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(ui_fanSetSlider, lv_color_hex(0x5A5A5A), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_fanSetSlider, 255, LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_color(ui_fanSetSlider, lv_color_hex(0x9E9E9E), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(ui_fanSetSlider, LV_GRAD_DIR_VER, LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_color(ui_fanSetSlider, lv_color_hex(0x838383), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_opa(ui_fanSetSlider, 255, LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_width(ui_fanSetSlider, 1, LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_pad(ui_fanSetSlider, 1, LV_PART_KNOB | LV_STATE_DEFAULT);
+
     ui_aboutPage = lv_tabview_add_tab(ui_TabView1, "关于");
 
     ui_Label7 = lv_label_create(ui_aboutPage);
@@ -374,5 +415,6 @@ void ui_Screen1_screen_init(void)
     lv_obj_add_event_cb(ui_tempSetSlider, ui_event_tempSetSlider, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_brightSetSlider, ui_event_brightSetSlider, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_netSetBotton, ui_event_netSetBotton, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_fanSetSlider, ui_event_fanSetSlider, LV_EVENT_ALL, NULL);
 
 }

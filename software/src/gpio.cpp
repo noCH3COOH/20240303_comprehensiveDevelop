@@ -3,6 +3,7 @@
 // ==================== global variables ====================
 
 GPIO_t led(BRIGHTNESS_CTRL_LED_PIN);
+GPIO_t fan(FAN_CONTROL_PIN);
 
 int loop_duty = 0;
 bool loop_direation = true;
@@ -12,10 +13,13 @@ bool loop_direation = true;
 /**
  * @brief 初始化 LED
 */
-void LED_init()
+void GPIO_init()
 {
-    led.set_mode_pwm(BRIGHTNESS_CTRL_LED_CHANNEL, 5000, 10, 50);
+    led.set_mode_pwm(BRIGHTNESS_CTRL_LEDC_CHANNEL, 5000, 10, 50);
     led.on();
+
+    fan.set_mode_pwm(FAN_CTRL_LEDC_CHANNEL, 5000, 10, 50);
+    fan.on();
 }
 
 /**

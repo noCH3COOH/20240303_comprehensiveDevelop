@@ -17,6 +17,8 @@ static lv_color_t buf[ LVGL_BUF_SIZE ];
 
 uint32_t frame_time = 0;
 
+float adc_in = 0;
+
 // ==================== 业务 ====================
 
 /**
@@ -37,7 +39,8 @@ void setup()
 
     log_now("[INFO] 初始化 IO 接口");
     {
-        LED_init();
+        GPIO_init();
+        pinMode(ADC_PIN, INPUT);
     }
     log_now("[SUCCESS] IO 接口初始化完成");
 
@@ -74,10 +77,14 @@ void setup()
     }
     log_now("[SUCCESS] LVGL初始化完成");
 
-    game_init();    // 游戏初始化
+    log_now("[INFO] 初始化游戏...");
+    {
+        game_init();    // 游戏初始化
+    }
+    log_now("[SUCCESS] 游戏初始化完成");
 
     freertos_init();    // FreeRTOS初始化
-    log_now("[INFO] 初始化完成，开始任务调度");
+    log_now("[SUCCESS] 初始化完成，开始任务调度");
 }
 
 /**
@@ -85,10 +92,8 @@ void setup()
  */
 void loop()
 {
-    // LED_root();
-    // DNS_request_loop(); // DNS服务请求处理
-
-    // game_loop();
+    led.set_pwm_duty(100 - (adc_in / 4095.0 * 100));
+    if(isAP)    DNS_request_loop(); // DNS服务请求处理
 }
 
 // ==================== LVGL 相关 ====================
@@ -153,10 +158,9 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 void ui_event_freshLabel(lv_event_t * e)
 {
     lv_label_set_text(ui_tempLabel, (String(dht11_getTemp()) + "°C").c_str());
-    //lv_label_set_text(ui_brightLabel, (String(led.get_pwm_duty()) + "%").c_str());
+    lv_label_set_text(ui_brightLabel, (String(int(adc_in / 4095.0 * 100)) + "%").c_str());
     lv_label_set_text(ui_wetLabel, (String(dht11_getHumi()) + "%").c_str());
     lv_label_set_text(ui_bombLabel, (String(led.get_pwm_duty().data) + "%").c_str());
-    //lv_label_set_text(ui_fanLabel, "0%");
     lv_label_set_text(ui_wifiLabel, (global_config.wifiname).c_str());
     lv_label_set_text(ui_ipLabel, (global_config.ip).c_str());
     
@@ -171,11 +175,11 @@ void ui_event_freshLabel(lv_event_t * e)
 */
 void freertos_init()
 {
-    xTaskCreatePinnedToCore(task_feed, "task_feed1", (1*1024), NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(task_feed, "task_feed_core1", (1*1024), NULL, 2, NULL, 0);
     xTaskCreatePinnedToCore(task_lvgl, "task_lvgl", (6*1024), NULL, 1, NULL, 0);
-    xTaskCreatePinnedToCore(task_feed, "task_feed2", (1*1024), NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(task_feed, "task_feed_core2", (1*1024), NULL, 2, NULL, 1);
     xTaskCreatePinnedToCore(task_game, "task_game", (2*1024), NULL, 1, NULL, 1);
-    xTaskCreatePinnedToCore(task_dht11_getData, "task_dht11_getData", (4*1024), NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(task_sensor_getData, "task_sensor_getData", (4*1024), NULL, 2, NULL, 1);
 }
 
 /**
@@ -209,6 +213,11 @@ void task_lvgl(void *pvParameters)
     vTaskDelete(NULL);
 }
 
+/**
+ * @brief FreeRTOS任务2
+ * @param pvParameters 任务参数
+ * @note 任务2，游戏任务
+*/
 void task_game(void *pvParameters)
 {
     while(1)
@@ -222,15 +231,16 @@ void task_game(void *pvParameters)
 /**
  * @brief FreeRTOS任务3
  * @param pvParameters 任务参数
- * @note 任务3，显示温湿度任务
+ * @note 任务3，获取传感器数据
 */
-void task_dht11_getData(void *pvParameters)
+void task_sensor_getData(void *pvParameters)
 {
     while(1)
     {
         // log_now("[INFO] task_dht11_getData running");
 
         dht11_getData();
+        adc_in = analogRead(ADC_PIN);
 
         // str_uart = "[INFO] Temp: " + String(dht11_getTemp()) + "°C Humi: " + String(dht11_getHumi()) + "%";
         // log_now(str_uart);

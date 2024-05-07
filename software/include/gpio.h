@@ -23,8 +23,11 @@
     #define PWM_CALC(x) uint32_t(x)
 #endif
 
-#define BRIGHTNESS_CTRL_LED_CHANNEL 1
+#define BRIGHTNESS_CTRL_LEDC_CHANNEL 1
 #define BRIGHTNESS_CTRL_LED_PIN 1
+
+#define FAN_CTRL_LEDC_CHANNEL 2
+#define FAN_CONTROL_PIN 10
 
 // ==================== enum ====================
 
@@ -94,7 +97,7 @@ extern GPIO_t led;
 
 // ==================== functions ====================
 
-void LED_init();
+void GPIO_init();
 void LED_root();
 
 void getCallback_readLED(AsyncWebServerRequest *request);

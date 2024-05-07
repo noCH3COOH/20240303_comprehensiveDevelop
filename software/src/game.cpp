@@ -40,12 +40,12 @@ void game_led4Pressed();
 
 #define game_victory() do{ \
     log_now("[SUCCESS] 游戏胜利 :)"); \
-    set_allLEDState(GAME_LED_ON); \
+    set_allLEDState(GAME_LED_OFF); \
 }while(0)
 
 #define game_fail() do{ \
     log_now("[FAILURE] 游戏失败 :("); \
-    set_allLEDState(GAME_LED_OFF); \
+    set_allLEDState(GAME_LED_ON); \
 }while(0)
 
 void game_init() 
@@ -55,14 +55,14 @@ void game_init()
     pinMode(GAME_LED3_PIN, OUTPUT);
     pinMode(GAME_LED4_PIN, OUTPUT);
 
-    log_now("[INFO] LED 初始化完成");
+    log_now("[INFO] 游戏LED 初始化完成");
 
     pinMode(GAME_KEY1_PIN, INPUT);
     pinMode(GAME_KEY2_PIN, INPUT);
     pinMode(GAME_KEY3_PIN, INPUT);
     pinMode(GAME_KEY4_PIN, INPUT);
 
-    log_now("[INFO] 游戏初始化完成");
+    log_now("[INFO] 游戏按键初始化完成");
 }
 
 void game_loop() 

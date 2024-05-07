@@ -52,6 +52,10 @@ lv_obj_t * ui_netSetPanel;
 lv_obj_t * ui_Label6;
 void ui_event_netSetBotton(lv_event_t * e);
 lv_obj_t * ui_netSetBotton;
+lv_obj_t * ui_fanSetPanel;
+lv_obj_t * ui_Label4;
+void ui_event_fanSetSlider(lv_event_t * e);
+lv_obj_t * ui_fanSetSlider;
 lv_obj_t * ui_aboutPage;
 lv_obj_t * ui_Label7;
 lv_obj_t * ui____initial_actions0;
@@ -91,6 +95,15 @@ void ui_event_netSetBotton(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_PRESSED) {
         LVGL_set_net(e);
+    }
+}
+void ui_event_fanSetSlider(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_RELEASED) {
+        _ui_slider_set_text_value(ui_Label4, target, "风扇效率：", "%");
+        LVGL_set_fan(e);
     }
 }
 

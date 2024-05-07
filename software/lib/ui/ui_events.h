@@ -13,6 +13,7 @@ extern "C" {
 void LVGL_set_temp(lv_event_t * e);
 void LVGL_set_bright(lv_event_t * e);
 void LVGL_set_net(lv_event_t * e);
+void LVGL_set_fan(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

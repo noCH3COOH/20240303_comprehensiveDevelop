@@ -32,6 +32,8 @@
 #define TS_CS_PIN 15
 #define TS_CLK_PIN 17
 
+#define ADC_PIN 18
+
 // ==================== global variables ====================
 
 extern String str_lcd;
@@ -52,6 +54,6 @@ void freertos_init();
 void task_feed(void *pvParameters);
 void task_lvgl(void *pvParameters);
 void task_game(void *pvParameters);
-void task_dht11_getData(void *pvParameters);
+void task_sensor_getData(void *pvParameters);
 
 #endif    // __MAIN_H
