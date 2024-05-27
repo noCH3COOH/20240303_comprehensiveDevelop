@@ -29,6 +29,6 @@ void LVGL_set_fan(lv_event_t * e)
 {
 	// Your code here
 	extern GPIO_t fan;
-	fan.set_pwm_duty(lv_slider_get_value(ui_fanSetSlider));
+	fan.set_pwm_duty(100 - lv_slider_get_value(ui_fanSetSlider));
 	lv_label_set_text(ui_fanLabel, (String(lv_slider_get_value(ui_fanSetSlider)) + "%").c_str());
 }
